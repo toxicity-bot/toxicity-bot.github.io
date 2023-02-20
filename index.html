@@ -10,13 +10,17 @@
 </head>
 
 <body>
+<main>
+
     <h1>Curb Your Toxicity</h1>
 
     <form>
         <p><label for="inputTitle">Input text to test for toxicity:</label></p>
         <textarea id="inputText" rows="4" cols="50"></textarea>
         <br>
-        <input type="submit" value="Submit" onclick="alert(document.getElementById('inputText').value.replace(/\n/gi,'<br>'))">
+        <input type="submit" id="submitButton" value="Submit">
     </form>
+    <script src="js/callApi.js"></script>
+</main>
 </body>
 </html>
