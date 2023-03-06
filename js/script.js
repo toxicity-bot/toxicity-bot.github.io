@@ -7,7 +7,7 @@ async function onTextSubmit(event) {
   const formData = new FormData(event.target);
   const inputText = formData.get("inputText");
   const response = await fetch(
-    `https://994f-35-3-5-99.ngrok.io/api/v1/score/?inputText=${inputText}`
+    `http://127.0.0.1:5000/api/v1/score/?inputText=${inputText}`
   );
   const data = await response.json();
   if (response.ok) {
