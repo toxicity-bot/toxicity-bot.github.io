@@ -3,24 +3,24 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="icon" href="images/favicon.ico">
-	<link rel="stylesheet" href="css/html5reset.css">
-	<link rel="stylesheet" href="css/style.css">
 	<title>Toxicity Bot</title>
+	<link rel="icon" href="images/favicon.ico">
+	<link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
 </head>
 
 <body>
-<main>
-
+<main class="page">
     <h1>Curb Your Toxicity</h1>
 
-    <form>
-        <p><label for="inputTitle">Input text to test for toxicity:</label></p>
-        <textarea id="inputText" rows="4" cols="50"></textarea>
-        <br>
-        <input type="submit" id="submitButton" value="Submit">
+    <form class="toxicity-form" onsubmit="onTextSubmit(event)">
+        <span class="toxicity-form__text">Input text to test for toxicity:</span>
+        <textarea class="textarea toxicity-form__textarea" name="inputText" rows="4" oninput="onTextChange(event)"></textarea>
+        <div class="toxicity-form__row">
+            <button id="toxicity-form-button" class="button" disabled>Submit</button>
+            <span id="toxicity-form-score">Submit to see score</span>
+        </div>
     </form>
-    <script src="js/callApi.js"></script>
 </main>
 </body>
 </html>
