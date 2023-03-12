@@ -1,0 +1,11 @@
+.lowSeverityHighlight {
+    background-color: yellow;
+}
+
+.midSeverityHighlight {
+    background-color: orange;
+}
+
+.highSeverityHighlight {
+    background-color: red;
+}
