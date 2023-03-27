@@ -7,5 +7,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Linelint
-        uses: actions/linelint@master
+        uses: fernandrone/linelint@0.0.4
         id: linelint
