@@ -6,13 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Check newline at EOF
-        uses: gps/newline-at-eof@master
-        with:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          IGNORE_FILE_PATTERNS: |
-            [
-              "dist/.*",
-              "package-lock.json"
-            ]
-          COMMIT_MESSAGE: 'Add EOF newlines'
+      - name: Linelint
+        uses: actions/linelint@master
+        id: linelint
