@@ -1,0 +1,18 @@
+name: Check EOF newlines
+run-name: Checking EOF newlines
+on: [push, pull_request]
+jobs:
+  check-newlines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check newline at EOF
+        uses: gps/newline-at-eof@master
+        with:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IGNORE_FILE_PATTERNS: |
+            [
+              "dist/.*",
+              "package-lock.json"
+            ]
+          COMMIT_MESSAGE: 'Add EOF newlines'
