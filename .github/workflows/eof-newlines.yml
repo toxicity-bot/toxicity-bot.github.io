@@ -6,6 +6,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Linelint
-        uses: fernandrone/linelint@0.0.4
-        id: linelint
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fd-find
+      - name: Check newline
+        run: |
+          set -eo pipefail
+          no_newline=$(fd -t f --exclude '*.{svg,ico,png,jpeg,jpg,webp}' -x sh -c 'if test -n "$(tail -c1 {})" ; then echo "{} doesn'\''t end in newline" ; fi')
+          if [ -n "$no_newline" ]; then
+              echo "Some files don't end with newline:" >&2
+              echo "$no_newline" >&2
+              exit 1
+          fi
