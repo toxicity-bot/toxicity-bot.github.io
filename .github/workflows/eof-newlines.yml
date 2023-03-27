@@ -8,8 +8,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y fd-find
+          sudo apt update
+          sudo apt install -y fd-find
       - name: Check newline
         run: |
           set -eo pipefail
