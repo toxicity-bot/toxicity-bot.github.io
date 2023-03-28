@@ -1,6 +1,8 @@
 name: Check EOF newlines
 run-name: Checking EOF newlines
-on: pull_request
+on:
+  pull_request:
+    types: [opened, synchronize]
 jobs:
   check-newlines:
     runs-on: ubuntu-latest

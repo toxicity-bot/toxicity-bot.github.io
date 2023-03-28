@@ -1,6 +1,8 @@
 name: Formatting
 run-name: Checking formatting of files
-on: [push, pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize]
 jobs:
   check-formatting:
     runs-on: ubuntu-latest
