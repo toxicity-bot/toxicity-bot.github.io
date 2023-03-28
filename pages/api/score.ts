@@ -1,8 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { google } from 'googleapis';
+import { google } from "googleapis";
 
-import PerspectiveScores from '@/lib/models/PerspectiveScores';
+import PerspectiveScores from "@/lib/models/PerspectiveScores";
 
 const API_KEY = "AIzaSyCZpPWR-zsuAHsdYrhVR1i0Qhr9Wc21FiY";
 const DISCOVERY_URL = "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1";
