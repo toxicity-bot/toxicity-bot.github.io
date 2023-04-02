@@ -1,5 +1,7 @@
 import Head from "next/head";
 import { useState } from "react";
+import Texts from "./textUnderTextbox";
+import { SentenceAndScore } from "./textUnderTextbox";
 
 import { HeatMeter } from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
@@ -95,7 +97,7 @@ export default function Home() {
     setSentencesAndScores(out);
   }
 
-  function editInputText(suggestion: string) {}
+  function editInputText(suggestion: string) { }
 
   /**
    * Get text to display for main score
