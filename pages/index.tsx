@@ -94,7 +94,7 @@ export default function Home() {
     const score = highestScore[1];
     // Format score to percentage and round to 2 decimal places
     const scorePercentage = Math.round(score * 10000) / 100;
-    return { scorePercentage };
+    return scorePercentage;
   };
 
   return (
