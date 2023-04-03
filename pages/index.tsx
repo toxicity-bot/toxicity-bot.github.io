@@ -1,11 +1,11 @@
 import Head from "next/head";
 import { useState } from "react";
-import Texts from "./textUnderTextbox";
-import { SentenceAndScore } from "./textUnderTextbox";
 
 import { HeatMeter } from "@/lib/components/HeatMeter";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
 import styles from "@/styles/Home.module.scss";
+
+import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
 
 export default function Home() {
   const [buttonEnabled, setButtonEnabled] = useState(false);
@@ -38,28 +38,37 @@ export default function Home() {
 
   function formatForSentencesAnalysis(scores: PerspectiveScores): any {
     let temp = [];
-    for (let i=0; i<scores.spans.insult.length; i++) {
-      let toxicity = Math.trunc(Math.max(
-        scores.spans.insult[i].score, 
-        scores.spans.profanity[i].score, 
-        scores.spans.threat[i].score, 
-        scores.spans.toxicity[i].score
-      ) * 100);
+    for (let i = 0; i < scores.spans.insult.length; i++) {
+      let toxicity = Math.trunc(
+        Math.max(
+          scores.spans.insult[i].score,
+          scores.spans.profanity[i].score,
+          scores.spans.threat[i].score,
+          scores.spans.toxicity[i].score
+        ) * 100
+      );
       if (toxicity >= toxicityThreshold) {
         temp.push({
-          text: userInput.substring(scores.spans.insult[i].begin, scores.spans.insult[i].end).trim(),
+          text: userInput
+            .substring(scores.spans.insult[i].begin, scores.spans.insult[i].end)
+            .trim(),
           percentage: toxicity,
           suggestion: "Kimi",
-        })
+        });
       }
     }
     // get rid of duplicate texts
     var out = temp.reduce(function (p: any, c: any) {
-      if (!p.some(function (el: any) { return el.text === c.text; })) p.push(c);
+      if (
+        !p.some(function (el: any) {
+          return el.text === c.text;
+        })
+      )
+        p.push(c);
       return p;
     }, []);
     // sort by percentage
-    out.sort(function(left: SentenceAndScore, right: SentenceAndScore): number {
+    out.sort(function (left: SentenceAndScore, right: SentenceAndScore): number {
       if (left.percentage < right.percentage) {
         return 1;
       }
@@ -67,13 +76,11 @@ export default function Home() {
         return -1;
       }
       return 0;
-    })
+    });
     setSentencesAndScores(out);
   }
 
-  function editInputText(suggestion: string) {
-    
-  }
+  function editInputText(suggestion: string) {}
 
   /**
    * Get text to display for main score
@@ -132,7 +139,7 @@ export default function Home() {
       {/* #FIXME: Add state for percentage */}
       <HeatMeter percentage={90} />
 
-      <Texts content={sentencesAndScores}></Texts>
+      <ScoredSentenceList content={sentencesAndScores}></ScoredSentenceList>
     </>
   );
 }
