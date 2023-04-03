@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useState } from "react";
 
-import { HeatMeter } from "@/lib/components/heatmeter";
+import { HeatMeter } from "@/lib/components/HeatMeter";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
 import styles from "@/styles/Home.module.scss";
 
@@ -31,21 +31,17 @@ export default function Home() {
     setScores(scores);
   };
 
-  /**
-   * Get text to display for main score
-   */
-  const getMainScoreText = () => {
+  const getPercentage = () => {
     if (scores === null) {
-      return "Submit to see score";
+      return 0;
     }
-    // Get category and score of highest score
     const highestScore = Object.entries(scores.summary).reduce((a, b) => (a[1] > b[1] ? a : b));
     const category = highestScore[0];
     const score = highestScore[1];
     // Format score to percentage and round to 2 decimal places
     const scorePercentage = Math.round(score * 10000) / 100;
-    return `${scorePercentage}% (${category})`;
-  };
+    return `${scorePercentage}`;
+  }
 
   return (
     <>
@@ -81,12 +77,11 @@ export default function Home() {
           >
             Submit
           </button>
-          <span>{getMainScoreText()}</span>
         </div>
       </form>
 
       {/* #FIXME: Add state for percentage */}
-      <HeatMeter percentage={90} />
+      <HeatMeter percentage={getPercentage()} />
     </>
   );
 }
