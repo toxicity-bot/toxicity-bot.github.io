@@ -71,7 +71,7 @@ export default function Home() {
             .trim(),
           percentage: toxicity,
           suggestion: "Kimi",
-        });
+        })
       }
     }
     // get rid of duplicate texts
