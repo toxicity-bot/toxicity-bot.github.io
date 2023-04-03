@@ -136,7 +136,6 @@ export default function Home() {
 
       {/* #FIXME: Add state for percentage */}
       <HeatMeter percentage={getPercentage()} />
-
       <ScoredSentenceList content={sentencesAndScores}></ScoredSentenceList>
     </>
   );
