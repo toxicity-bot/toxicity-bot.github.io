@@ -48,8 +48,7 @@ export const HeatMeter = ({ percentage }: HeatMeterProps) => {
   let percentString;
   if (percentage == 0) {
     percentString = "";
-  }
-  else {
+  } else {
     percentString = String(percentage) + "%";
   }
 
