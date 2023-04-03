@@ -80,7 +80,12 @@ export default function Home() {
     setSentencesAndScores(out);
   }
 
-  function editInputText(suggestion: string) {}
+  function editInputText(original:string, suggestion: string) {
+    console.log(original);
+    console.log(suggestion);
+    let temp:string = userInput.replace(original, suggestion);
+    setUserInput(temp);
+  }
 
   /**
    * Get text to display for main score
