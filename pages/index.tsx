@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useState } from "react";
 
+import { HeatMeter } from "@/lib/components/heatmeter";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
 import styles from "@/styles/Home.module.scss";
 
@@ -83,6 +84,9 @@ export default function Home() {
           <span>{getMainScoreText()}</span>
         </div>
       </form>
+
+      {/* #FIXME: Add state for percentage */}
+      <HeatMeter percentage={90} />
     </>
   );
 }
