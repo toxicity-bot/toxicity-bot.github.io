@@ -5,10 +5,14 @@ import { HeatMeter } from "@/lib/components/HeatMeter";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
 import styles from "@/styles/Home.module.scss";
 
+import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
+
 export default function Home() {
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const [scores, setScores] = useState<PerspectiveScores | null>(null);
   const [userInput, setUserInput] = useState("");
+  const [sentencesAndScores, setSentencesAndScores] = useState<SentenceAndScore[]>([]);
+  const [toxicityThreshold, setToxicityThreshold] = useState(40);
 
   /**
    * Get scores from API
@@ -29,8 +33,58 @@ export default function Home() {
     }
     const scores = data as PerspectiveScores;
     setScores(scores);
+    formatForSentencesAnalysis(scores);
   };
 
+  function formatForSentencesAnalysis(scores: PerspectiveScores): any {
+    let temp = [];
+    for (let i = 0; i < scores.spans.insult.length; i++) {
+      let toxicity = Math.trunc(
+        Math.max(
+          scores.spans.insult[i].score,
+          scores.spans.profanity[i].score,
+          scores.spans.threat[i].score,
+          scores.spans.toxicity[i].score
+        ) * 100
+      );
+      if (toxicity >= toxicityThreshold) {
+        temp.push({
+          text: userInput
+            .substring(scores.spans.insult[i].begin, scores.spans.insult[i].end)
+            .trim(),
+          percentage: toxicity,
+          suggestion: "Kimi",
+        });
+      }
+    }
+    // get rid of duplicate texts
+    var out = temp.reduce(function (p: any, c: any) {
+      if (
+        !p.some(function (el: any) {
+          return el.text === c.text;
+        })
+      )
+        p.push(c);
+      return p;
+    }, []);
+    // sort by percentage
+    out.sort(function (left: SentenceAndScore, right: SentenceAndScore): number {
+      if (left.percentage < right.percentage) {
+        return 1;
+      }
+      if (left.percentage > right.percentage) {
+        return -1;
+      }
+      return 0;
+    });
+    setSentencesAndScores(out);
+  }
+
+  function editInputText(suggestion: string) {}
+
+  /**
+   * Get text to display for main score
+   */
   const getPercentage = () => {
     if (scores === null) {
       return 0;
@@ -40,7 +94,7 @@ export default function Home() {
     const score = highestScore[1];
     // Format score to percentage and round to 2 decimal places
     const scorePercentage = Math.round(score * 10000) / 100;
-    return `${scorePercentage}`;
+    return {scorePercentage};
   }
 
   return (
@@ -82,6 +136,8 @@ export default function Home() {
 
       {/* #FIXME: Add state for percentage */}
       <HeatMeter percentage={getPercentage()} />
+
+      <ScoredSentenceList content={sentencesAndScores}></ScoredSentenceList>
     </>
   );
 }
