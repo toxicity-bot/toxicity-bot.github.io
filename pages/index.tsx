@@ -5,6 +5,8 @@ import PerspectiveScores from "@/lib/models/PerspectiveScores";
 
 import Texts, { SentenceAndScore } from "./textUnderTextbox";
 
+import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
+
 export default function Home() {
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const [scores, setScores] = useState<PerspectiveScores | null>(null);
@@ -133,7 +135,11 @@ export default function Home() {
           <span>{getMainScoreText()}</span>
         </div>
       </form>
-      <Texts content={sentencesAndScores} callbackFunction={editInputText}></Texts>
+
+      {/* #FIXME: Add state for percentage */}
+      <HeatMeter percentage={90} />
+
+      <ScoredSentenceList content={sentencesAndScores} callbackFunction={editInputText}></ScoredSentenceList>
     </>
   );
 }

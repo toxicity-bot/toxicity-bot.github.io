@@ -1,6 +1,6 @@
 import Popup from "reactjs-popup";
 
-import styles from "@/styles/textUnderTextbox.module.scss";
+import styles from "@/styles/ScoredSentenceList.module.scss";
 
 export interface SentenceAndScore {
   text: string;
@@ -13,7 +13,7 @@ interface textEnablePair {
   enabled: boolean;
 }
 
-export default function Texts(props: any) {
+export default function ScoredSentenceList(props: any) {
   let sentenceAndScores: SentenceAndScore[] = props.content;
 
   return sentenceAndScores.length == 0 ? (
