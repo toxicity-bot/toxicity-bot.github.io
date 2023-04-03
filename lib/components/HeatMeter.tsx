@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "@/styles/HeatMeter.module.css";
 
 interface HeatMeterProps {
@@ -22,7 +21,9 @@ export const HeatMeter = ({ percentage }: HeatMeterProps) => {
 
   let bulbEmoji;
 
-  if (percentage < 10) {
+  if (percentage == 0) {
+    bulbEmoji = "❓";
+  } else if (percentage < 10) {
     bulbEmoji = "🤔";
   } else if (percentage < 20) {
     bulbEmoji = "😕";
@@ -44,8 +45,16 @@ export const HeatMeter = ({ percentage }: HeatMeterProps) => {
     bulbEmoji = "☠️";
   }
 
+  let percentString;
+  if (percentage == 0) {
+    percentString = "";
+  } else {
+    percentString = String(percentage) + "%";
+  }
+
   return (
     <div className={styles.heatMeter}>
+      <div className={styles.heatMeterScore}>{percentString}</div>
       <div className={styles.heatMeterFill} style={fillStyle}></div>
       <div className={styles.heatMeterBulb}>{bulbEmoji}</div>
     </div>
