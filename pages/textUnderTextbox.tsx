@@ -1,11 +1,12 @@
 import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
 import { useState, useEffect } from "react";
 import styles from "@/styles/textUnderTextbox.module.scss";
-import { Modern_Antiqua } from "next/font/google";
+import Popup from 'reactjs-popup';
 
 export interface SentenceAndScore {
     text: string;
     percentage: number;
+    suggestion: string;
 }
 
 interface SentenceAndScoreWrapper {
@@ -52,26 +53,12 @@ export default function Texts(props: SentenceAndScoreWrapper) {
                 <div key={item.text}>
                     <p className={`${styles.inline} ${styles.percentageSign}`}>{item.percentage.toString() + "%"}</p>
                     <p className={`${styles.inline}`}>{item.text}</p>
-                    <button onClick={() => EnableModal(item.text)} className={styles.inline}>Suggestions</button>
-
-                    <Modal toggle={() => EnableModal(item.text)} isOpen={modelEnableList.filter(pair => {
-                        return pair.text == item.text;
-                    })[0].enabled}>
-                        <div className=" modal-header">
-                        <h5 className=" modal-title" id="exampleModalLabel">
-                            Modal title
-                        </h5>
-                        <button
-                            aria-label="Close"
-                            className=" close"
-                            type="button"
-                            onClick={() => EnableModal(item.text)}
-                        >
-                            <span aria-hidden={true}>×</span>
-                        </button>
+                    {/* <button onClick={() => EnableModal(item.text)} className={styles.inline}>Suggestions</button> */}
+                    <Popup trigger={<button> Suggestions </button>} position="right center">                        
+                        <div className={`${styles.suggestionBox}`}>
+                            <p>{item.suggestion}</p>
                         </div>
-                        <ModalBody>{item.text}</ModalBody>
-                    </Modal>
+                    </Popup>
                 </div>
             ))}
         </div>

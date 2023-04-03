@@ -47,7 +47,8 @@ export default function Home() {
       if (toxicity >= toxicityThreshold) {
         temp.push({
           text: userInput.substring(scores.spans.insult[i].begin, scores.spans.insult[i].end).trim(),
-          percentage: toxicity
+          percentage: toxicity,
+          suggestion: "Kimi",
         })
       }
     }
