@@ -3,6 +3,7 @@ import { useState } from "react";
 import Texts from "./textUnderTextbox";
 import { SentenceAndScore } from "./textUnderTextbox";
 
+import { HeatMeter } from "@/lib/components/HeatMeter";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
 import styles from "@/styles/Home.module.scss";
 
@@ -127,7 +128,11 @@ export default function Home() {
           <span>{getMainScoreText()}</span>
         </div>
       </form>
-      <Texts content={sentencesAndScores} callbackFunction={editInputText}></Texts>
+
+      {/* #FIXME: Add state for percentage */}
+      <HeatMeter percentage={90} />
+
+      <Texts content={sentencesAndScores}></Texts>
     </>
   );
 }
