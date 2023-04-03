@@ -54,7 +54,7 @@ export default function Texts(props: SentenceAndScoreWrapper) {
                     <p className={`${styles.inline}`}>{item.text}</p>
                     <button onClick={() => EnableModal(item.text)} className={styles.inline}>Suggestions</button>
 
-                    {/* <Modal toggle={() => EnableModal(item.text)} isOpen={modelEnableList.filter(pair => {
+                    <Modal toggle={() => EnableModal(item.text)} isOpen={modelEnableList.filter(pair => {
                         return pair.text == item.text;
                     })[0].enabled}>
                         <div className=" modal-header">
@@ -71,7 +71,7 @@ export default function Texts(props: SentenceAndScoreWrapper) {
                         </button>
                         </div>
                         <ModalBody>{item.text}</ModalBody>
-                    </Modal> */}
+                    </Modal>
                 </div>
             ))}
         </div>
