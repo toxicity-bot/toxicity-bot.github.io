@@ -1,0 +1,13 @@
+.container {
+    display: grid;
+    grid-template-columns: 33% 33% 33%;
+	text-align: left;
+    height: max-content;
+}
+
+.column {
+    background-color: bisque;
+    margin: 5%;
+    padding-left: 20%;
+    border-radius: 5%;
+}
