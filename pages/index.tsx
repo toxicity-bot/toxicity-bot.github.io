@@ -70,6 +70,10 @@ export default function Home() {
     setSentencesAndScores(out);
   }
 
+  function editInputText(suggestion: string) {
+    
+  }
+
   /**
    * Get text to display for main score
    */
@@ -123,7 +127,7 @@ export default function Home() {
           <span>{getMainScoreText()}</span>
         </div>
       </form>
-      <Texts content={sentencesAndScores}></Texts>
+      <Texts content={sentencesAndScores} callbackFunction={editInputText}></Texts>
     </>
   );
 }
