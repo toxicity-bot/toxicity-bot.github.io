@@ -1,0 +1,27 @@
+.heatMeter {
+  width: 20px;
+  height: 200px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  position: relative;
+}
+
+.heatMeterFill {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-radius: 10px;
+}
+
+.heatMeterBulb {
+  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -10px;
+  position: absolute;
+  bottom: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+}
