@@ -48,6 +48,7 @@ export const HeatMeter = ({ percentage }: HeatMeterProps) => {
     <div className={styles.heatMeter}>
       <div className={styles.heatMeterFill} style={fillStyle}></div>
       <div className={styles.heatMeterBulb}>{bulbEmoji}</div>
+      <p>Test</p>
     </div>
   );
 };
