@@ -1,28 +1,28 @@
 .header {
-    grid-area: header;
+  grid-area: header;
 }
 
 .heatmeter {
-    grid-area: heatmeter;
+  grid-area: heatmeter;
 }
 
 .input {
-    grid-area: input;
+  grid-area: input;
 }
 
 .scores {
-    grid-area: scores;
+  grid-area: scores;
 }
 
 .textBox {
-    grid-area: box;
+  grid-area: box;
 }
 
 .container {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    grid-template-rows: auto;
-    grid-template-areas: 
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto;
+  grid-template-areas:
     ". header  account"
     "settings input heatmeter"
     "settings   box   heatmeter"
