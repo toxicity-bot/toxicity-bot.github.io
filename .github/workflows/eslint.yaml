@@ -3,7 +3,7 @@ name: ESLint
 on: [pull_request]
 
 jobs:
-  check_newline:
+  eslint:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -16,8 +16,9 @@ jobs:
       with:
         node-version: 18
         cache: "npm"
+      run: npm ci
     - name: Run ESLint
-      run: npx eslint . --ext .js,.jsx,.ts,.tsx --fix
+      run: npx eslint . --fix
     - name: Commit & Push changes
       uses: actions-js/push@master
       with:
