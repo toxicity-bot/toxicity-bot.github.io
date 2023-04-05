@@ -110,37 +110,37 @@ export default function Home() {
           <h1>Toxicity Bot</h1>
         </div>
         <div className={styles.input}>
-            <form>
-              <span>Input text to test for toxicity:</span>
-              <div className={styles.textBox}>
-                <textarea
-                  rows={4}
-                  maxLength={15000}
-                  onChange={e => {
+          <form>
+            <span>Input text to test for toxicity:</span>
+            <div className={styles.textBox}>
+              <textarea
+                rows={4}
+                maxLength={15000}
+                onChange={e => {
+                  e.preventDefault();
+                  setUserInput(e.target.value);
+                  setButtonEnabled(e.target.value !== "");
+                  console.log(e.target.value);
+                }}
+                value={userInput}
+              />
+              <div>
+                <button
+                  onClick={e => {
                     e.preventDefault();
-                    setUserInput(e.target.value);
-                    setButtonEnabled(e.target.value !== "");
-                    console.log(e.target.value);
+                    updateScore();
                   }}
-                  value={userInput}
-                />
-                <div>
-                  <button
-                    onClick={e => {
-                      e.preventDefault();
-                      updateScore();
-                    }}
-                    disabled={!buttonEnabled}
-                  >
-                    Submit
-                  </button>
-                </div>
+                  disabled={!buttonEnabled}
+                >
+                  Submit
+                </button>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
+        </div>
         {/* #FIXME: Add state for percentage */}
         <div className={styles.heatmeter}>
-          <HeatMeter percentage={getPercentage()}/>
+          <HeatMeter percentage={getPercentage()} />
         </div>
         <div className={styles.scores}>
           <ScoredSentenceList content={sentencesAndScores}></ScoredSentenceList>
