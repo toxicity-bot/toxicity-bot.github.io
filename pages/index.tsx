@@ -105,38 +105,47 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <h1>Toxicity Bot</h1>
-
-      <form>
-        <span>Input text to test for toxicity:</span>
-        <textarea
-          rows={4}
-          maxLength={15000}
-          onChange={e => {
-            e.preventDefault();
-            setUserInput(e.target.value);
-            setButtonEnabled(e.target.value !== "");
-            console.log(e.target.value);
-          }}
-          value={userInput}
-        />
-        <div>
-          <button
-            onClick={e => {
-              e.preventDefault();
-              updateScore();
-            }}
-            disabled={!buttonEnabled}
-          >
-            Submit
-          </button>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1>Toxicity Bot</h1>
         </div>
-      </form>
-
-      {/* #FIXME: Add state for percentage */}
-      <HeatMeter percentage={getPercentage()} />
-      <ScoredSentenceList content={sentencesAndScores}></ScoredSentenceList>
+        <div className={styles.input}>
+            <form>
+              <span>Input text to test for toxicity:</span>
+              <div className={styles.textBox}>
+                <textarea
+                  rows={4}
+                  maxLength={15000}
+                  onChange={e => {
+                    e.preventDefault();
+                    setUserInput(e.target.value);
+                    setButtonEnabled(e.target.value !== "");
+                    console.log(e.target.value);
+                  }}
+                  value={userInput}
+                />
+                <div>
+                  <button
+                    onClick={e => {
+                      e.preventDefault();
+                      updateScore();
+                    }}
+                    disabled={!buttonEnabled}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        {/* #FIXME: Add state for percentage */}
+        <div className={styles.heatmeter}>
+          <HeatMeter percentage={getPercentage()}/>
+        </div>
+        <div className={styles.scores}>
+          <ScoredSentenceList content={sentencesAndScores}></ScoredSentenceList>
+        </div>
+      </div>
     </>
   );
 }
