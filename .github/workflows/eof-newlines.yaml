@@ -1,0 +1,27 @@
+name: Check EOF newlines
+
+on: [pull_request]
+
+jobs:
+  check_newline:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@main
+      with:
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+    - name: Install file command
+      run: sudo apt-get update && sudo apt-get install -y file
+    - name: Check for missing newline
+      run: |
+        git ls-files -z | while IFS= read -rd '' f; do
+          if file --mime-encoding "$f" | grep -qv binary; then
+            tail -c1 < "$f" | read -r _ || echo >> "$f"
+          fi
+        done
+    - name: Commit & Push changes
+      uses: actions-js/push@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        message: "Worflow: Add EOF newline(s)"

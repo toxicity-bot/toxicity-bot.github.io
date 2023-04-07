@@ -1,4 +1,4 @@
-export default interface PerspectiveScores {
+interface PerspectiveScores {
   summary: {
     toxicity: number;
     insult: number;
@@ -32,3 +32,5 @@ export default interface PerspectiveScores {
     }[];
   };
 }
+
+export default PerspectiveScores;
