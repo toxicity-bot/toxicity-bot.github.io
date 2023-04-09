@@ -10,8 +10,17 @@ a {
 }
 
 button {
-  font-family: "Inter";
   cursor: pointer;
+  box-shadow: 0 5px 5px 0 rgba(0, 0, 10, 0.15);
+  border-style: solid;
+  border-color: hsla(0, 0, 100%, 0);
+  border-radius: 15px;
+  background-color: map-get($colorSurface, "100");
+}
+
+button:hover {
+  border-color: hsla(0, 0, 100%, 0.2);
+  font-family: "Inter";
 }
 
 input[type="checkbox"] {
@@ -20,4 +29,22 @@ input[type="checkbox"] {
 
 input[type="range"] {
   cursor: pointer;
+}
+
+textarea {
+  grid-area: input;
+  box-shadow: 0 5px 5px 0 rgba(0, 0, 10, 0.15);
+  border-width: 10px;
+  border-color: hsla(0, 0, 100%, 0.3);
+  border-radius: 10px;
+  width: 1500px;
+  resize: none;
+  font-size: 18px;
+}
+
+input:focus,
+textarea {
+  // border-color: hsla(0, 0, 100%, 0.1);
+  outline: hsla(0, 0, 100%, 0.01);
+  border-width: 5px;
 }

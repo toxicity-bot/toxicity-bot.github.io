@@ -126,17 +126,22 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <div className={styles.container}>
         <div className={styles.header}>
           <h1>Toxicity Bot</h1>
         </div>
+
         <div className={styles.input}>
           <form>
-            <span>Input text to test for toxicity:</span>
+            <div className={styles.prompt}>
+              <span>Input text to test for toxicity:</span>
+            </div>
             <div className={styles.textBox}>
               <textarea
-                rows={4}
-                maxLength={15000}
+                className={styles.textArea}
+                // rows={4}
+                // maxLength={15000}
                 onChange={e => {
                   e.preventDefault();
                   setUserInput(e.target.value);
@@ -147,6 +152,7 @@ export default function Home() {
               />
               <div>
                 <button
+                  className={styles.submitButton}
                   onClick={e => {
                     e.preventDefault();
                     updateScore();
@@ -160,27 +166,30 @@ export default function Home() {
           </form>
         </div>
 
-        <QuickSettings
-          summaryScoreMode={summaryScoreMode}
-          handleSummaryScoreModeChange={newSummaryScoreMode =>
-            setSummaryScoreMode(newSummaryScoreMode)
-          }
-          scoreCategoriesSettings={scoreCategoriesSettings}
-          handleScoreCategoriesSettingsChange={newScoreCategoriesSettings =>
-            setScoreCategoriesSettings(newScoreCategoriesSettings)
-          }
-          handleReset={() => setScoreCategoriesSettings(defaultScoreCategoriesSettings)}
-        />
-
         {/* #FIXME: Add state for percentage */}
         <div className={styles.heatmeter}>
           <HeatMeter percentage={getPercentage()} />
         </div>
+
         <div className={styles.scores}>
           <ScoredSentenceList
             content={sentencesAndScores}
             callbackFunction={editInputText}
           ></ScoredSentenceList>
+        </div>
+
+        <div className={styles.settings}>
+          <QuickSettings
+            summaryScoreMode={summaryScoreMode}
+            handleSummaryScoreModeChange={newSummaryScoreMode =>
+              setSummaryScoreMode(newSummaryScoreMode)
+            }
+            scoreCategoriesSettings={scoreCategoriesSettings}
+            handleScoreCategoriesSettingsChange={newScoreCategoriesSettings =>
+              setScoreCategoriesSettings(newScoreCategoriesSettings)
+            }
+            handleReset={() => setScoreCategoriesSettings(defaultScoreCategoriesSettings)}
+          />
         </div>
       </div>
     </>
