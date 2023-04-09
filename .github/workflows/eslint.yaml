@@ -16,7 +16,7 @@ jobs:
       with:
         node-version: 18
         cache: "npm"
-      run: npm ci
+    - run: npm ci
     - name: Run ESLint
       run: npx eslint . --fix
     - name: Commit & Push changes
