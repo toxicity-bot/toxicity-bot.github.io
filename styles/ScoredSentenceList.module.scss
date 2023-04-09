@@ -1,12 +1,38 @@
+@import "variables";
+
 .box {
-  margin-top: 10px;
-  border: 2px black solid;
+  margin-top: 20px;
+  // border: 2px black solid;
+  background-color: map-get($colorSurface, "900");
+  border-radius: 15px;
   padding: 5px;
+  margin-right: 10%;
+  width: 70%;
+  border-width: 2px;
+  border-color: map-get($colorOnSurface, "50");
+}
+
+.individualItem {
+  margin: 1px 1px 1px 1px;
+  background-color: map-get($colorSurface, "100");
+  border-radius: 5px;
+  margin: 10px;
+}
+
+.text {
+  margin-left: 10%;
+}
+
+#pctg {
+  font-weight: bold;
+  font-style: italic;
+  color: map-get($colorOnSurface, "300");
 }
 
 .inline {
   display: inline-block;
   margin-right: 10px;
+  margin-left: 10px;
 }
 
 .percentageSign {
@@ -23,4 +49,15 @@
 .sentence:hover {
   color: green;
   cursor: pointer;
+}
+
+.suggestButton {
+  margin-left: 20px;
+  background-color: map-get($colorPrimary, "A100");
+  width: 120px;
+  font-style: italic;
+  border-color: map-get($colorPrimary, "400");
+}
+.suggestButton:hover {
+  border-color: map-get($colorPrimary, "900");
 }

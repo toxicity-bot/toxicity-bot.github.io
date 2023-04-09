@@ -24,8 +24,8 @@ export default function ScoredSentenceList(props: any) {
   ) : (
     <div className={styles.box}>
       {sentenceAndScores.map((item: SentenceAndScore) => (
-        <div key={item.text}>
-          <p className={`${styles.inline} ${styles.percentageSign}`}>
+        <div key={item.text} className={styles.individualItem}>
+          <p className={`${styles.inline} ${styles.percentageSign}`} id={styles.pctg}>
             {item.percentage.toString() + "%"}
           </p>
           <p
@@ -36,7 +36,7 @@ export default function ScoredSentenceList(props: any) {
           >
             {item.text}
           </p>
-          <Popup trigger={<button> Suggestions </button>} position="right center">
+          <Popup trigger={<button className={styles.suggestButton}> Suggestions </button>} position="right center">
             <div className={`${styles.suggestionBox}`}>
               <p>{item.suggestion}</p>
             </div>

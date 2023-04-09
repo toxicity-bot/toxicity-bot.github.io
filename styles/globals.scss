@@ -2,3 +2,41 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+button {
+  font-family: Arial;
+  cursor: pointer;
+  border-radius: 15px;
+  border-style: solid;
+  border-color: hsla(0, 0, 100%, 0);
+  box-shadow: 0 5px 5px 0 rgba(0, 0, 10, 0.15);
+  background-color: map-get($colorSurface, "100");
+}
+button:hover {
+  border-color: hsla(0, 0, 100%, 0.2);
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+input[type="range"] {
+  cursor: pointer;
+}
+
+textarea {
+  resize: none;
+  width: 1500px;
+  grid-area: input;
+  font-size: 18px;
+  border-radius: 10px;
+  border-width: 10px;
+  box-shadow: 0 5px 5px 0 rgba(0, 0, 10, 0.15);
+  border-color: hsla(0, 0, 100%, 0.3);
+}
+
+input:focus, textarea {
+  // border-color: hsla(0, 0, 100%, 0.1);
+  outline: hsla(0, 0, 100%, 0.01);
+  border-width: 5px;
+}
