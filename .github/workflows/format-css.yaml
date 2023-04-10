@@ -1,4 +1,4 @@
-name: Auto format CSS files
+name: Check CSS files format
 
 on: [pull_request]
 
@@ -17,10 +17,5 @@ jobs:
         node-version: 18
         cache: "npm"
     - run: npm ci
-    - name: Run ESLint
-      run: npx prettier -w styles
-    - name: Commit & Push changes
-      uses: actions-js/push@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        message: "Worflow: Format CSS"
+    - name: Run Prettier check on CSS
+      run: npx prettier -c styles
