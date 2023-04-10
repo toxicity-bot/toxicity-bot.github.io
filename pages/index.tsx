@@ -1,7 +1,5 @@
 import Head from "next/head";
 import { useState } from "react";
-import Texts from "./textUnderTextbox";
-import { SentenceAndScore } from "./textUnderTextbox";
 
 import { HeatMeter } from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
@@ -10,6 +8,7 @@ import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
 import ScoreCategory from "@/lib/models/ScoreCategory";
 import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
 import styles from "@/styles/Home.module.scss";
+import { Span } from "@/lib/models/Span";
 
 import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
 
@@ -53,17 +52,37 @@ export default function Home() {
     formatForSentencesAnalysis(scores);
   };
 
+  /**
+   * Gets suggestions from moderator API
+   */
+  const updateSuggestions = async (span: Span) => {
+    const response = await fetch("/api/moderator", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: userInput, begin: span.begin, end: span.end }),
+    });
+    // data is PerspectiveScores interface or error
+    const data = await response.json();
+    if (data.error) {
+      console.error(data.error);
+      return;
+    }
+    const scores = data as PerspectiveScores;
+    setScores(scores);
+    formatForSentencesAnalysis(scores);
+  }
+
   function formatForSentencesAnalysis(scores: PerspectiveScores): any {
     let temp = [];
     for (let i = 0; i < scores.spans.insult.length; i++) {
-      let toxicity = Math.trunc(
-        Math.max(
-          scores.spans.insult[i].score,
-          scores.spans.profanity[i].score,
-          scores.spans.threat[i].score,
-          scores.spans.toxicity[i].score
-        ) * 100
-      );
+      let toxicity = Math.trunc(Math.max(
+        scores.spans.insult[i].score,
+        scores.spans.profanity[i].score,
+        scores.spans.threat[i].score,
+        scores.spans.toxicity[i].score
+      ) * 100);
       if (toxicity >= toxicityThreshold) {
         temp.push({
           text: userInput

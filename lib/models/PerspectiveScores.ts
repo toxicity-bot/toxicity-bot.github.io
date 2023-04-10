@@ -1,4 +1,10 @@
-interface PerspectiveScores {
+import { Span } from "./Span";
+
+interface SpanWithScore extends Span {
+  score: number;
+}
+
+export default interface PerspectiveScores {
   summary: {
     toxicity: number;
     insult: number;
@@ -7,30 +13,9 @@ interface PerspectiveScores {
   };
 
   spans: {
-    toxicity: {
-      begin: number;
-      end: number;
-      score: number;
-    }[];
-
-    insult: {
-      begin: number;
-      end: number;
-      score: number;
-    }[];
-
-    profanity: {
-      begin: number;
-      end: number;
-      score: number;
-    }[];
-
-    threat: {
-      begin: number;
-      end: number;
-      score: number;
-    }[];
+    toxicity: SpanWithScore[];
+    insult: SpanWithScore[];
+    profanity: SpanWithScore[];
+    threat: SpanWithScore[];
   };
 }
-
-export default PerspectiveScores;
