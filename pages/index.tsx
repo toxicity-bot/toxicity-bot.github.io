@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { HeatMeter } from "@/lib/components/HeatMeter";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
+import QuickSettings from "@/lib/components/QuickSettings";
 import styles from "@/styles/Home.module.scss";
 
 import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
