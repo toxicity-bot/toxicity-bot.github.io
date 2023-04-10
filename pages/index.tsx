@@ -49,6 +49,7 @@ export default function Home() {
     const scores = data as PerspectiveScores;
     setScores(scores);
     formatForSentencesAnalysis(scores);
+    formatForSentencesAnalysis(scores);
   };
 
   function formatForSentencesAnalysis(scores: PerspectiveScores): any {
@@ -95,7 +96,12 @@ export default function Home() {
     setSentencesAndScores(out);
   }
 
-  function editInputText(suggestion: string) {}
+  function editInputText(original: string, suggestion: string) {
+    console.log(original);
+    console.log(suggestion);
+    let temp: string = userInput.replace(original, suggestion);
+    setUserInput(temp);
+  }
 
   /**
    * Get text to display for main score
@@ -171,7 +177,10 @@ export default function Home() {
           <HeatMeter percentage={getPercentage()} />
         </div>
         <div className={styles.scores}>
-          <ScoredSentenceList content={sentencesAndScores}></ScoredSentenceList>
+          <ScoredSentenceList
+            content={sentencesAndScores}
+            callbackFunction={editInputText}
+          ></ScoredSentenceList>
         </div>
       </div>
     </>

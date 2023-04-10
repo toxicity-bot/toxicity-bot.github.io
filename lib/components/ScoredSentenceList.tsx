@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import Popup from "reactjs-popup";
 
 import styles from "@/styles/ScoredSentenceList.module.scss";
