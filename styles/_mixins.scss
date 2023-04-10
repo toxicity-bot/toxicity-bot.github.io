@@ -1,0 +1,18 @@
+@use "sass:math";
+
+@function makeShadow($lightOffset, $shadowOffset, $isInset: false) {
+  $lightOffsetY: math.ceil($lightOffset * 0.8);
+  $lightBlur: math.ceil(math.abs($lightOffset * 1.25));
+  $shadowOffsetY: math.ceil($shadowOffset * 1.2);
+  $shadowBlur: math.ceil($shadowOffset * 1.5);
+
+  @if $isInset {
+    @return 0 0 0 0 var(--color-light), 0 0 0 0 var(--color-shadow),
+      inset $lightOffset $lightOffsetY $lightBlur 0 var(--color-light),
+      inset $shadowOffset $shadowOffsetY $shadowBlur 0 var(--color-shadow);
+  } @else {
+    @return $lightOffset $lightOffsetY $lightBlur 0 var(--color-light),
+      $shadowOffset $shadowOffsetY $shadowBlur 0 var(--color-shadow),
+      inset 0 0 0 0 var(--color-light), inset 0 0 0 0 var(--color-shadow);
+  }
+}

@@ -128,43 +128,35 @@ export default function Home() {
       </Head>
 
       <div className={styles.container}>
-        <div className={styles.header}>
-          <h1>Toxicity Bot</h1>
-        </div>
+        <h1 className={styles.header}>Toxicity Bot</h1>
 
-        <div className={styles.input}>
-          <form>
-            <div className={styles.prompt}>
-              <span>Input text to test for toxicity:</span>
-            </div>
-            <div className={styles.textBox}>
-              <textarea
-                className={styles.textArea}
-                // rows={4}
-                // maxLength={15000}
-                onChange={e => {
-                  e.preventDefault();
-                  setUserInput(e.target.value);
-                  setButtonEnabled(e.target.value !== "");
-                  console.log(e.target.value);
-                }}
-                value={userInput}
-              />
-              <div>
-                <button
-                  className={styles.submitButton}
-                  onClick={e => {
-                    e.preventDefault();
-                    updateScore();
-                  }}
-                  disabled={!buttonEnabled}
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
+        <form className={styles.inputForm}>
+          <div>
+            <span>Input text to test for toxicity:</span>
+          </div>
+          <textarea
+            className={styles["inputForm__textarea"]}
+            maxLength={15000}
+            onChange={e => {
+              e.preventDefault();
+              setUserInput(e.target.value);
+              setButtonEnabled(e.target.value !== "");
+            }}
+            value={userInput}
+          />
+          <div>
+            <button
+              className={styles.submitButton}
+              onClick={e => {
+                e.preventDefault();
+                updateScore();
+              }}
+              disabled={!buttonEnabled}
+            >
+              Submit
+            </button>
+          </div>
+        </form>
 
         {/* #FIXME: Add state for percentage */}
         <div className={styles.heatmeter}>

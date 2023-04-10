@@ -5,6 +5,7 @@ interface HeatMeterProps {
 }
 
 export const HeatMeter = ({ percentage }: HeatMeterProps) => {
+  // #TODO: Replace hard-coded colors
   const gradientColor =
     percentage < 50
       ? "#5bf5a5" // green

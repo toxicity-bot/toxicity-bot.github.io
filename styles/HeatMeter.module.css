@@ -2,7 +2,7 @@
   width: 20px;
   height: 200px;
   border-radius: 10px;
-  border: 2px solid #ccc;
+  border: 2px solid #ccc; /* #TODO: Replace hardcoded color */
   position: relative;
 }
 
