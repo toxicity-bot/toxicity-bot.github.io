@@ -41,7 +41,8 @@ textarea {
   border-color: hsla(0, 0, 100%, 0.3);
 }
 
-input:focus, textarea {
+input:focus,
+textarea {
   // border-color: hsla(0, 0, 100%, 0.1);
   outline: hsla(0, 0, 100%, 0.01);
   border-width: 5px;

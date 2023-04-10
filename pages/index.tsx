@@ -125,38 +125,38 @@ export default function Home() {
           <h1>Toxicity Bot</h1>
         </div>
         <div className={styles.input}>
-            <form>
-              <div className={styles.prompt}>
-                <span>Input text to test for toxicity:</span>
-              </div>
-              <div className={styles.textBox}>
-                <textarea
-                  className={styles.textArea}
-                  // rows={4}
-                  // maxLength={15000}
-                  onChange={e => {
-                    e.preventDefault();
-                    setUserInput(e.target.value);
-                    setButtonEnabled(e.target.value !== "");
-                    console.log(e.target.value);
-                  }}
-                  value={userInput}
-                />
-                <div>
-                  <button
+          <form>
+            <div className={styles.prompt}>
+              <span>Input text to test for toxicity:</span>
+            </div>
+            <div className={styles.textBox}>
+              <textarea
+                className={styles.textArea}
+                // rows={4}
+                // maxLength={15000}
+                onChange={e => {
+                  e.preventDefault();
+                  setUserInput(e.target.value);
+                  setButtonEnabled(e.target.value !== "");
+                  console.log(e.target.value);
+                }}
+                value={userInput}
+              />
+              <div>
+                <button
                   className={styles.submitButton}
-                    onClick={e => {
-                      e.preventDefault();
-                      updateScore();
-                    }}
-                    disabled={!buttonEnabled}
-                  >
+                  onClick={e => {
+                    e.preventDefault();
+                    updateScore();
+                  }}
+                  disabled={!buttonEnabled}
+                >
                     Submit
-                  </button>
-                </div>
+                </button>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
+        </div>
         {/* #FIXME: Add state for percentage */}
         <div className={styles.heatmeter}>
           <HeatMeter percentage={getPercentage()}/>

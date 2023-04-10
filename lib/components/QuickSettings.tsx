@@ -143,7 +143,7 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
 
       {/* Reset button */}
       <button onClick={props.handleReset}
-      className={styles.button}>
+        className={styles.button}>
         <FontAwesomeIcon icon={faRotate} /> Reset
       </button>
     </div>
