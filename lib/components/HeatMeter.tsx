@@ -9,10 +9,10 @@ export const HeatMeter = ({ percentage }: HeatMeterProps) => {
     percentage < 50
       ? "#5bf5a5" // green
       : percentage < 70
-      ? "#ffff00" // yellow
-      : percentage < 85
-      ? "#ff6600" // orange
-      : "#ff0000"; // red
+        ? "#ffff00" // yellow
+        : percentage < 85
+          ? "#ff6600" // orange
+          : "#ff0000"; // red
 
   const fillStyle = {
     height: `${percentage}%`,

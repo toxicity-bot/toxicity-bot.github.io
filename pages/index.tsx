@@ -2,18 +2,33 @@ import Head from "next/head";
 import { useState } from "react";
 
 import { HeatMeter } from "@/lib/components/HeatMeter";
+import QuickSettings from "@/lib/components/QuickSettings";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
+import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
+import ScoreCategory from "@/lib/models/ScoreCategory";
+import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
 import QuickSettings from "@/lib/components/QuickSettings";
 import styles from "@/styles/Home.module.scss";
 
 import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
 
 export default function Home() {
+  const defaultScoreCategoriesSettings: ScoreCategoriesSettings = {
+    [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
+    [ScoreCategory.profane]: { enabled: true, weight: 0.5 },
+    [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
+    [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
+  };
+
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const [scores, setScores] = useState<PerspectiveScores | null>(null);
   const [userInput, setUserInput] = useState("");
   const [sentencesAndScores, setSentencesAndScores] = useState<SentenceAndScore[]>([]);
   const [toxicityThreshold, setToxicityThreshold] = useState(40);
+  const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
+  const [scoreCategoriesSettings, setScoreCategoriesSettings] = useState(
+    defaultScoreCategoriesSettings
+  );
 
   /**
    * Get scores from API
