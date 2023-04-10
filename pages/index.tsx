@@ -7,7 +7,6 @@ import PerspectiveScores from "@/lib/models/PerspectiveScores";
 import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
 import ScoreCategory from "@/lib/models/ScoreCategory";
 import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
-import QuickSettings from "@/lib/components/QuickSettings";
 import styles from "@/styles/Home.module.scss";
 
 import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
