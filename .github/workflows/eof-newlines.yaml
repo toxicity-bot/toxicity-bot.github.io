@@ -20,8 +20,3 @@ jobs:
             tail -c1 < "$f" | read -r _ || echo >> "$f"
           fi
         done
-    - name: Commit & Push changes
-      uses: actions-js/push@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        message: "Worflow: Add EOF newline(s)"

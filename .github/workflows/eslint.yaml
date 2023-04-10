@@ -18,9 +18,4 @@ jobs:
         cache: "npm"
     - run: npm ci
     - name: Run ESLint
-      run: npx eslint . --fix
-    - name: Commit & Push changes
-      uses: actions-js/push@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        message: "Worflow: Fix ESLint errors"
+      run: npm run lint
