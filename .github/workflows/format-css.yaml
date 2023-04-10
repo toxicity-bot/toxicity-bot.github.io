@@ -19,8 +19,12 @@ jobs:
     - run: npm ci
     - name: Run ESLint
       run: npx prettier -w styles
+    - name: Extract branch name
+      id: branch
+      run: echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
     - name: Commit & Push changes
       uses: actions-js/push@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ steps.extract_branch.outputs.branch }}
         message: "Worflow: Format CSS"
