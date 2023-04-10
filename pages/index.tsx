@@ -1,18 +1,33 @@
 import Head from "next/head";
 import { useState } from "react";
 
+import { HeatMeter } from "@/lib/components/HeatMeter";
+import QuickSettings from "@/lib/components/QuickSettings";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
-
-import Texts, { SentenceAndScore } from "./textUnderTextbox";
+import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
+import ScoreCategory from "@/lib/models/ScoreCategory";
+import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
+import styles from "@/styles/Home.module.scss";
 
 import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
 
 export default function Home() {
+  const defaultScoreCategoriesSettings: ScoreCategoriesSettings = {
+    [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
+    [ScoreCategory.profane]: { enabled: true, weight: 0.5 },
+    [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
+    [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
+  };
+
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const [scores, setScores] = useState<PerspectiveScores | null>(null);
   const [userInput, setUserInput] = useState("");
   const [sentencesAndScores, setSentencesAndScores] = useState<SentenceAndScore[]>([]);
   const [toxicityThreshold, setToxicityThreshold] = useState(40);
+  const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
+  const [scoreCategoriesSettings, setScoreCategoriesSettings] = useState(
+    defaultScoreCategoriesSettings
+  );
 
   /**
    * Get scores from API
@@ -33,6 +48,7 @@ export default function Home() {
     }
     const scores = data as PerspectiveScores;
     setScores(scores);
+    formatForSentencesAnalysis(scores);
     formatForSentencesAnalysis(scores);
   };
 
@@ -80,27 +96,26 @@ export default function Home() {
     setSentencesAndScores(out);
   }
 
-  function editInputText(original:string, suggestion: string) {
+  function editInputText(original: string, suggestion: string) {
     console.log(original);
     console.log(suggestion);
-    let temp:string = userInput.replace(original, suggestion);
+    let temp: string = userInput.replace(original, suggestion);
     setUserInput(temp);
   }
 
   /**
    * Get text to display for main score
    */
-  const getMainScoreText = () => {
+  const getPercentage = () => {
     if (scores === null) {
-      return "Submit to see score";
+      return 0;
     }
-    // Get category and score of highest score
     const highestScore = Object.entries(scores.summary).reduce((a, b) => (a[1] > b[1] ? a : b));
     const category = highestScore[0];
     const score = highestScore[1];
     // Format score to percentage and round to 2 decimal places
     const scorePercentage = Math.round(score * 10000) / 100;
-    return `${scorePercentage}% (${category})`;
+    return scorePercentage;
   };
 
   return (
@@ -111,40 +126,63 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <h1>Toxicity Bot</h1>
-
-      <form>
-        <span>Input text to test for toxicity:</span>
-        <textarea
-          rows={4}
-          maxLength={15000}
-          onChange={e => {
-            e.preventDefault();
-            setUserInput(e.target.value);
-            setButtonEnabled(e.target.value !== "");
-            console.log(e.target.value);
-          }}
-          value={userInput}
-        />
-        <div>
-          <button
-            onClick={e => {
-              e.preventDefault();
-              updateScore();
-            }}
-            disabled={!buttonEnabled}
-          >
-            Submit
-          </button>
-          <span>{getMainScoreText()}</span>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1>Toxicity Bot</h1>
         </div>
-      </form>
+        <div className={styles.input}>
+          <form>
+            <span>Input text to test for toxicity:</span>
+            <div className={styles.textBox}>
+              <textarea
+                rows={4}
+                maxLength={15000}
+                onChange={e => {
+                  e.preventDefault();
+                  setUserInput(e.target.value);
+                  setButtonEnabled(e.target.value !== "");
+                  console.log(e.target.value);
+                }}
+                value={userInput}
+              />
+              <div>
+                <button
+                  onClick={e => {
+                    e.preventDefault();
+                    updateScore();
+                  }}
+                  disabled={!buttonEnabled}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
 
-      {/* #FIXME: Add state for percentage */}
-      <HeatMeter percentage={90} />
+        <QuickSettings
+          summaryScoreMode={summaryScoreMode}
+          handleSummaryScoreModeChange={newSummaryScoreMode =>
+            setSummaryScoreMode(newSummaryScoreMode)
+          }
+          scoreCategoriesSettings={scoreCategoriesSettings}
+          handleScoreCategoriesSettingsChange={newScoreCategoriesSettings =>
+            setScoreCategoriesSettings(newScoreCategoriesSettings)
+          }
+          handleReset={() => setScoreCategoriesSettings(defaultScoreCategoriesSettings)}
+        />
 
-      <ScoredSentenceList content={sentencesAndScores} callbackFunction={editInputText}></ScoredSentenceList>
+        {/* #FIXME: Add state for percentage */}
+        <div className={styles.heatmeter}>
+          <HeatMeter percentage={getPercentage()} />
+        </div>
+        <div className={styles.scores}>
+          <ScoredSentenceList
+            content={sentencesAndScores}
+            callbackFunction={editInputText}
+          ></ScoredSentenceList>
+        </div>
+      </div>
     </>
   );
 }

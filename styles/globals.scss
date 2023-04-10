@@ -1,4 +1,23 @@
+@import "variables";
+
+body {
+  background-color: map-get($colorSurface, "500");
+}
+
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button {
+  font-family: "Inter";
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+input[type="range"] {
+  cursor: pointer;
 }

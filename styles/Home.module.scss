@@ -1,0 +1,34 @@
+.header {
+  grid-area: header;
+}
+
+.heatmeter {
+  grid-area: heatmeter;
+}
+
+.input {
+  grid-area: input;
+}
+
+.scores {
+  grid-area: scores;
+}
+
+.settings {
+  grid-area: settings;
+}
+
+.textBox {
+  grid-area: box;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto;
+  grid-template-areas:
+    ". header  account"
+    "settings input heatmeter"
+    "settings   box   heatmeter"
+    ".      scores .";
+}

@@ -1,0 +1,26 @@
+.box {
+  margin-top: 10px;
+  border: 2px black solid;
+  padding: 5px;
+}
+
+.inline {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.percentageSign {
+  font-size: 20;
+}
+
+.suggestionBox {
+  border: 2px black solid;
+  background-color: white;
+  width: 100px;
+  height: 150px;
+}
+
+.sentence:hover {
+  color: green;
+  cursor: pointer;
+}
