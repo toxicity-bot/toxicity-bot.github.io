@@ -1,14 +1,14 @@
 $colorSurface: (
-  "50": #fffefb,
-  "100": #fffef6,
-  "200": #fffdf0,
-  "300": #fefce9,
-  "400": #fefbe5,
-  "500": #fefae0,
-  "600": #fef9dc,
-  "700": #fef9d8,
-  "800": #fef8d3,
-  "900": #fdf6cb,
+  "50": #fcfdfc,
+  "100": #f8faf9,
+  "200": #f4f6f5,
+  "300": #f0f2f0,
+  "400": #ecf0ed,
+  "500": #e9edea,
+  "600": #e6ebe7,
+  "700": #e3e8e4,
+  "800": #dfe5e1,
+  "900": #d9e0db,
   "A100": #ffffff,
   "A200": #ffffff,
   "A400": #ffffff,
@@ -87,3 +87,11 @@ $colorError: (
   "A700": #ffa9a1,
   "contrast": #000000,
 );
+
+:export {
+  colorSurface: map-get($colorSurface, "500");
+  colorOnSurface: map-get($colorOnSurface, "500");
+  colorPrimary: map-get($colorPrimary, "500");
+  colorSecondary: map-get($colorSecondary, "500");
+  colorError: map-get($colorError, "500");
+}

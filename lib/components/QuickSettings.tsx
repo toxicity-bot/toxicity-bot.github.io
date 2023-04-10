@@ -1,22 +1,25 @@
+import RangeInput from "@/lib/components/RangeInput";
 import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
-import ScoreCategory from "@/lib/models/ScoreCategory";
-import ScoreCategorySettings from "@/lib/models/ScoreCategorySettings";
+import ScoreCategory, { ScoreCategoryStrings } from "@/lib/models/ScoreCategory";
 import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
 import styles from "@/styles/components/QuickSettings.module.scss";
 import { faCircleQuestion, faCog, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type ToggleSliderProps = {
-  category: ScoreCategory;
+  id: number;
   label: string;
+  enabled?: boolean;
+  value?: number;
   min: number;
   max: number;
   step: number;
-  settings: ScoreCategorySettings;
-  onChange: (category: ScoreCategory, enabled: boolean, value: number) => void;
+  onChange: (id: number, enabled: boolean, value: number) => void;
 } & typeof defaultToggleSliderProps;
 
 const defaultToggleSliderProps = {
+  enabled: true,
+  value: 0.5,
   min: 0,
   max: 1,
   step: 0.01,
@@ -24,19 +27,14 @@ const defaultToggleSliderProps = {
 
 function ToggleSlider(props: ToggleSliderProps): JSX.Element {
   function onClick(): void {
-    props.onChange(props.category, !props.settings.enabled, props.settings.weight);
-  }
-
-  function onSliderChange(event: React.ChangeEvent<HTMLInputElement>): void {
-    event.preventDefault();
-    props.onChange(props.category, props.settings.enabled, Number(event.currentTarget.value));
+    props.onChange(props.id, !props.enabled, props.value);
   }
 
   return (
     <div
       // Add disabled class if disabled
       className={
-        styles.toggleSlider + (props.settings.enabled ? "" : ` ${styles["toggleSlider--disabled"]}`)
+        styles.toggleSlider + (props.enabled ? "" : ` ${styles["toggleSlider--disabled"]}`)
       }
       onClick={onClick}
       onMouseDown={event => {
@@ -46,17 +44,14 @@ function ToggleSlider(props: ToggleSliderProps): JSX.Element {
     >
       <span>{props.label}</span>
 
-      <input
-        type="range"
+      <RangeInput
+        id={props.id}
+        value={props.value}
         min={props.min}
         max={props.max}
         step={props.step}
-        value={props.settings.weight}
-        onChange={onSliderChange}
-        onClick={event => {
-          // Prevent click event from bubbling up to parent
-          event.stopPropagation();
-        }}
+        disabled={!props.enabled}
+        onChange={(id, value) => props.onChange(id, props.enabled, value)}
       />
     </div>
   );
@@ -72,6 +67,10 @@ interface QuickSettingsProps {
 }
 
 export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
+  const scoreCategories = Object.keys(ScoreCategory)
+    .filter(key => isNaN(Number(key)))
+    .map(key => ScoreCategory[key as keyof typeof ScoreCategory]);
+
   function onToggleClick(event: React.ChangeEvent<HTMLInputElement>): void {
     const summaryScoreMode = event.currentTarget.checked
       ? SummaryScoreMode.weighted
@@ -111,30 +110,19 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
 
       {/* Toggles and sliders for each score category */}
       <div className={styles.toggleSliders}>
-        <ToggleSlider
-          label="Toxic"
-          category={ScoreCategory.toxic}
-          settings={props.scoreCategoriesSettings[ScoreCategory.toxic]}
-          onChange={onSliderChange}
-        />
-        <ToggleSlider
-          label="Profane"
-          category={ScoreCategory.profane}
-          settings={props.scoreCategoriesSettings[ScoreCategory.profane]}
-          onChange={onSliderChange}
-        />
-        <ToggleSlider
-          label="Threat"
-          category={ScoreCategory.threat}
-          settings={props.scoreCategoriesSettings[ScoreCategory.threat]}
-          onChange={onSliderChange}
-        />
-        <ToggleSlider
-          label="Insult"
-          category={ScoreCategory.insult}
-          settings={props.scoreCategoriesSettings[ScoreCategory.insult]}
-          onChange={onSliderChange}
-        />
+        {scoreCategories.map((category, _) => {
+          const settings = props.scoreCategoriesSettings[category];
+          return (
+            <ToggleSlider
+              key={category}
+              id={category}
+              label={ScoreCategoryStrings[category]}
+              enabled={settings.enabled}
+              value={settings.weight}
+              onChange={onSliderChange}
+            />
+          );
+        })}
       </div>
 
       <div style={{ height: 25 }}></div>

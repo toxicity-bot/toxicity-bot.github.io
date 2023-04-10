@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { HeatMeter } from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
@@ -141,7 +141,6 @@ export default function Home() {
                   e.preventDefault();
                   setUserInput(e.target.value);
                   setButtonEnabled(e.target.value !== "");
-                  console.log(e.target.value);
                 }}
                 value={userInput}
               />

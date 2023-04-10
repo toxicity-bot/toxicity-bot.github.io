@@ -1,0 +1,39 @@
+@import "../variables.module.scss";
+
+.rangeInput {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  border-radius: 1px;
+  background: rgba(black, 0.15);
+  max-width: 90%;
+  height: 2px;
+  accent-color: map-get($colorPrimary, "500");
+
+  &:focus {
+    outline: none;
+  }
+
+  @mixin sliderThumbStyles {
+    appearance: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: 2px 2px 3px 0 rgba(black, 0.2);
+    border: solid 2px white;
+    border-radius: 8px;
+    background: map-get($colorPrimary, "500");
+    width: 16px;
+    height: 16px;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    @include sliderThumbStyles;
+  }
+
+  &::-moz-range-thumb {
+    -moz-appearance: none;
+    @include sliderThumbStyles;
+  }
+}

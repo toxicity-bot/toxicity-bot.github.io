@@ -1,7 +1,8 @@
-@import "variables";
+@import "variables.module.scss";
 
 body {
   background-color: map-get($colorSurface, "500");
+  color: map-get($colorOnSurface, "400");
 }
 
 a {
@@ -10,14 +11,13 @@ a {
 }
 
 button {
-  font-family: "Inter";
   cursor: pointer;
+  color: map-get($colorOnSurface, "500");
+  font-family: "Inter";
 }
 
 input[type="checkbox"] {
   cursor: pointer;
 }
 
-input[type="range"] {
-  cursor: pointer;
-}
+// #TODO: Style textarea
