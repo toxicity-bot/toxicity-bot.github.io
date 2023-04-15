@@ -3,13 +3,12 @@ import { useState } from "react";
 
 import { HeatMeter } from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
+import ScoredSentenceList, { SentenceAndScore } from "@/lib/components/ScoredSentenceList";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
 import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
 import ScoreCategory from "@/lib/models/ScoreCategory";
 import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
 import styles from "@/styles/Home.module.scss";
-
-import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
 
 export default function Home() {
   const defaultScoreCategoriesSettings: ScoreCategoriesSettings = {
@@ -137,17 +136,18 @@ export default function Home() {
           <textarea
             className={styles["inputForm__textarea"]}
             maxLength={15000}
-            onChange={e => {
+            onChange={(e) => {
               e.preventDefault();
               setUserInput(e.target.value);
               setButtonEnabled(e.target.value !== "");
             }}
             value={userInput}
+            autoComplete="off"
           />
           <div>
             <button
               className={styles.submitButton}
-              onClick={e => {
+              onClick={(e) => {
                 e.preventDefault();
                 updateScore();
               }}
@@ -173,11 +173,11 @@ export default function Home() {
         <div className={styles.settings}>
           <QuickSettings
             summaryScoreMode={summaryScoreMode}
-            handleSummaryScoreModeChange={newSummaryScoreMode =>
+            handleSummaryScoreModeChange={(newSummaryScoreMode) =>
               setSummaryScoreMode(newSummaryScoreMode)
             }
             scoreCategoriesSettings={scoreCategoriesSettings}
-            handleScoreCategoriesSettingsChange={newScoreCategoriesSettings =>
+            handleScoreCategoriesSettingsChange={(newScoreCategoriesSettings) =>
               setScoreCategoriesSettings(newScoreCategoriesSettings)
             }
             handleReset={() => setScoreCategoriesSettings(defaultScoreCategoriesSettings)}

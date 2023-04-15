@@ -30,7 +30,7 @@
   cursor: pointer;
   box-shadow: makeShadow($lightOffset: -3px, $shadowOffset: 4px);
   border-radius: 25px;
-  background: linear-gradient(135deg, rgba(black, 0.02), transparent 20%);
+  background: linear-gradient(to right bottom, rgba(black, 0.03), transparent, rgba(white, 0.05));
   width: 120px;
   height: 80px;
   color: var(--color-secondary);

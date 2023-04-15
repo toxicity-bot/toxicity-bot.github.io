@@ -1,9 +1,9 @@
 @use "sass:math";
 
 @function makeShadow($lightOffset, $shadowOffset, $isInset: false) {
-  $lightOffsetY: math.ceil($lightOffset * 0.8);
+  $lightOffsetY: math.ceil($lightOffset * 0.65);
   $lightBlur: math.ceil(math.abs($lightOffset * 1.25));
-  $shadowOffsetY: math.ceil($shadowOffset * 1.2);
+  $shadowOffsetY: math.ceil($shadowOffset * 1.35);
   $shadowBlur: math.ceil($shadowOffset * 1.5);
 
   @if $isInset {
@@ -16,3 +16,17 @@
       inset 0 0 0 0 var(--color-light), inset 0 0 0 0 var(--color-shadow);
   }
 }
+
+$backgroundSurfaceOverlay: linear-gradient(
+  to right bottom,
+  rgba(black, 0.03),
+  transparent,
+  rgba(white, 0.04)
+);
+
+$backgroundSurfaceOverlayInset: linear-gradient(
+  to right bottom,
+  rgba(white, 0.04),
+  transparent,
+  rgba(black, 0.03)
+);
