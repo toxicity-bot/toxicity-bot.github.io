@@ -4,7 +4,7 @@ interface HeatMeterProps {
   percentage: number;
 }
 
-export const HeatMeter = ({ percentage }: HeatMeterProps) => {
+export default function HeatMeter({ percentage }: HeatMeterProps): JSX.Element {
   // #TODO: Replace hard-coded colors
   const gradientColor =
     percentage < 50
@@ -60,4 +60,4 @@ export const HeatMeter = ({ percentage }: HeatMeterProps) => {
       <div className={styles.heatMeterBulb}>{bulbEmoji}</div>
     </div>
   );
-};
+}

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useState } from "react";
 
-import { HeatMeter } from "@/lib/components/HeatMeter";
+import HeatMeter from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
 import ScoredSentenceList, { SentenceAndScore } from "@/lib/components/ScoredSentenceList";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
