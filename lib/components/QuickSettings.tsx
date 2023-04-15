@@ -44,7 +44,7 @@ function ToggleSlider(props: ToggleSliderProps): JSX.Element {
       // Add disabled class if disabled
       className={toggleClass}
       onClick={() => props.onChange(props.id, !props.enabled, props.value)}
-      onMouseDown={event => {
+      onMouseDown={(event) => {
         // Disable text selection on double click
         if (event.detail > 1) event.preventDefault();
         setPressed(true);
@@ -77,8 +77,8 @@ interface QuickSettingsProps {
 
 export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
   const scoreCategories = Object.keys(ScoreCategory)
-    .filter(key => isNaN(Number(key)))
-    .map(key => ScoreCategory[key as keyof typeof ScoreCategory]);
+    .filter((key) => isNaN(Number(key)))
+    .map((key) => ScoreCategory[key as keyof typeof ScoreCategory]);
 
   function onToggleClick(event: React.ChangeEvent<HTMLInputElement>): void {
     const summaryScoreMode = event.currentTarget.checked
@@ -108,15 +108,18 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
       </h2>
 
       {/* Toggle for summary score mode */}
-      <div>
+      <div className={styles.scoreCalcModeGroup}>
         <span>Highest</span>
 
         {/* #TODO: Animated toggle */}
-        <input
-          type="checkbox"
-          value={props.summaryScoreMode === SummaryScoreMode.weighted ? "on" : "off"}
-          onChange={onToggleClick}
-        />
+        <label className={styles.toggleSwitch}>
+          <input
+            type="checkbox"
+            value={props.summaryScoreMode === SummaryScoreMode.weighted ? "on" : "off"}
+            onChange={onToggleClick}
+          />
+          <span className={styles["toggleSwitch__switch"]}></span>
+        </label>
 
         <span>Weighted</span>
       </div>
