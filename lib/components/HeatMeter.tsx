@@ -1,4 +1,4 @@
-import styles from "@/styles/HeatMeter.module.css";
+import styles from "@/styles/HeatMeter.module.scss";
 
 interface HeatMeterProps {
   percentage: number;
