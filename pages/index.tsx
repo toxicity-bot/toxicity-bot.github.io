@@ -130,6 +130,7 @@ export default function Home() {
         <h1 className={styles.header}>Toxicity Bot</h1>
 
         <form className={styles.inputForm}>
+          <input style={{ display: "none" }} autoComplete="off" hidden />
           <div>
             <span>Input text to test for toxicity:</span>
           </div>
@@ -142,7 +143,6 @@ export default function Home() {
               setButtonEnabled(e.target.value !== "");
             }}
             value={userInput}
-            autoComplete="off"
           />
           <div>
             <button
