@@ -1,12 +1,10 @@
-@import "variables";
-
 .box {
   margin-top: 20px;
   margin-right: 10%;
   border-width: 2px;
-  border-color: map-get($colorOnSurface, "50");
+  border-color: #e6e7e7; /* #TODO: Replace hardcoded color */
   border-radius: 15px;
-  background-color: map-get($colorSurface, "900");
+  background-color: #d9e0db; /* #TODO: Replace hardcoded color */
   padding: 5px;
   width: 70%;
 }
@@ -15,7 +13,7 @@
   margin: 1px 1px 1px 1px;
   margin: 10px;
   border-radius: 5px;
-  background-color: map-get($colorSurface, "100");
+  background-color: #f8faf9; /* #TODO: Replace hardcoded color */
 }
 
 .text {
@@ -23,7 +21,7 @@
 }
 
 #pctg {
-  color: map-get($colorOnSurface, "300");
+  color: #6f7274; /* #TODO: Replace hardcoded color */
   font-style: italic;
   font-weight: bold;
 }
@@ -39,24 +37,25 @@
 }
 
 .suggestionBox {
-  border: 2px black solid;
-  background-color: white;
+  border: 2px black solid; /* #TODO: Replace hardcoded color */
+  background-color: white; /* #TODO: Replace hardcoded color */
   width: 100px;
   height: 150px;
 }
 
 .sentence:hover {
   cursor: pointer;
-  color: green;
+  color: green; /* #TODO: Replace hardcoded color */
 }
 
 .suggestButton {
   margin-left: 20px;
-  border-color: map-get($colorPrimary, "400");
-  background-color: map-get($colorPrimary, "A100");
+  border-color: #77b96f; /* #TODO: Replace hardcoded color */
+  background-color: #ccffc9; /* #TODO: Replace hardcoded color */
   width: 120px;
   font-style: italic;
 }
+
 .suggestButton:hover {
-  border-color: map-get($colorPrimary, "900");
+  border-color: #32832b; /* #TODO: Replace hardcoded color */
 }

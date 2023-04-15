@@ -1,19 +1,40 @@
-@import "variables";
+.container {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr minmax(auto, 750px) 1fr;
+  grid-template-areas:
+    ".        header account"
+    "settings input  heatmeter"
+    "settings input  heatmeter"
+    ".        scores .";
+  gap: 30px;
+}
 
 .header {
   grid-area: header;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.inputForm {
+  display: flex;
+  grid-area: input;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  height: 100%;
+
+  &__textarea {
+    flex-grow: 1;
+    box-sizing: border-box;
+    max-width: 750px;
+    resize: vertical;
+  }
 }
 
 .heatmeter {
   grid-area: heatmeter;
-}
-
-.input {
-  grid-area: input;
-}
-
-.prompt {
-  margin-bottom: 10px;
+  justify-self: left;
 }
 
 .scores {
@@ -22,34 +43,9 @@
 
 .settings {
   grid-area: settings;
-}
-
-.textBox {
-  grid-area: box;
-}
-
-.settings {
-  grid-area: settings;
+  justify-self: right;
 }
 
 .submitButton {
   margin-top: 10px;
-  width: 70px;
-  height: 30px;
-}
-.submitButton:active {
-  background-color: rgb(214, 214, 214);
-  width: 70px;
-  height: 30px;
-}
-
-.container {
-  display: grid;
-  grid-template-rows: auto;
-  grid-template-columns: auto auto auto;
-  grid-template-areas:
-    ". header  account"
-    "settings input heatmeter"
-    "settings   box   heatmeter"
-    ".      scores .";
 }

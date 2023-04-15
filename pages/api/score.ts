@@ -34,7 +34,7 @@ function waitForClientOrTimeout(timeout: number): Promise<Readonly<any>> {
 function parsePerspectiveApi(data: any): PerspectiveScores {
   const spans = (attribute: string) => {
     const spans = data.attributeScores[attribute].spanScores;
-    return Object.keys(spans).map(key => {
+    return Object.keys(spans).map((key) => {
       const span = spans[key];
       return {
         begin: span.begin,

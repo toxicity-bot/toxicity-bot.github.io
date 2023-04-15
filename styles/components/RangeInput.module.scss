@@ -1,0 +1,43 @@
+.rangeInput {
+  // Background is calculated in JS
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  border-radius: 1px;
+  max-width: 90%;
+  height: 2px;
+  accent-color: var(--color-primary);
+
+  &:focus {
+    outline: none;
+  }
+
+  @mixin sliderThumbStyles {
+    appearance: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: 2px 2px 3px 0 var(--color-shadow);
+    border: solid 2px var(--color-match-contrast);
+    border-radius: 8px;
+    background: var(--color-primary);
+    width: 16px;
+    height: 16px;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    @include sliderThumbStyles;
+  }
+
+  &::-moz-range-thumb {
+    -moz-appearance: none;
+    @include sliderThumbStyles;
+  }
+
+  &--secondary {
+    &::-webkit-slider-thumb {
+      background: var(--color-secondary);
+    }
+  }
+}

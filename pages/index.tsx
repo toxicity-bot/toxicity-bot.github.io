@@ -3,13 +3,12 @@ import { useState } from "react";
 
 import { HeatMeter } from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
+import ScoredSentenceList, { SentenceAndScore } from "@/lib/components/ScoredSentenceList";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
 import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
 import ScoreCategory from "@/lib/models/ScoreCategory";
 import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
 import styles from "@/styles/Home.module.scss";
-
-import ScoredSentenceList, { SentenceAndScore } from "../lib/components/ScoredSentenceList";
 
 export default function Home() {
   const defaultScoreCategoriesSettings: ScoreCategoriesSettings = {
@@ -128,43 +127,36 @@ export default function Home() {
       </Head>
 
       <div className={styles.container}>
-        <div className={styles.header}>
-          <h1>Toxicity Bot</h1>
-        </div>
+        <h1 className={styles.header}>Toxicity Bot</h1>
 
-        <div className={styles.input}>
-          <form>
-            <div className={styles.prompt}>
-              <span>Input text to test for toxicity:</span>
-            </div>
-            <div className={styles.textBox}>
-              <textarea
-                className={styles.textArea}
-                // rows={4}
-                // maxLength={15000}
-                onChange={e => {
-                  e.preventDefault();
-                  setUserInput(e.target.value);
-                  setButtonEnabled(e.target.value !== "");
-                  console.log(e.target.value);
-                }}
-                value={userInput}
-              />
-              <div>
-                <button
-                  className={styles.submitButton}
-                  onClick={e => {
-                    e.preventDefault();
-                    updateScore();
-                  }}
-                  disabled={!buttonEnabled}
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
+        <form className={styles.inputForm}>
+          <input style={{ display: "none" }} autoComplete="off" hidden />
+          <div>
+            <span>Input text to test for toxicity:</span>
+          </div>
+          <textarea
+            className={styles["inputForm__textarea"]}
+            maxLength={15000}
+            onChange={(e) => {
+              e.preventDefault();
+              setUserInput(e.target.value);
+              setButtonEnabled(e.target.value !== "");
+            }}
+            value={userInput}
+          />
+          <div>
+            <button
+              className={styles.submitButton}
+              onClick={(e) => {
+                e.preventDefault();
+                updateScore();
+              }}
+              disabled={!buttonEnabled}
+            >
+              Submit
+            </button>
+          </div>
+        </form>
 
         {/* #FIXME: Add state for percentage */}
         <div className={styles.heatmeter}>
@@ -181,11 +173,11 @@ export default function Home() {
         <div className={styles.settings}>
           <QuickSettings
             summaryScoreMode={summaryScoreMode}
-            handleSummaryScoreModeChange={newSummaryScoreMode =>
+            handleSummaryScoreModeChange={(newSummaryScoreMode) =>
               setSummaryScoreMode(newSummaryScoreMode)
             }
             scoreCategoriesSettings={scoreCategoriesSettings}
-            handleScoreCategoriesSettingsChange={newScoreCategoriesSettings =>
+            handleScoreCategoriesSettingsChange={(newScoreCategoriesSettings) =>
               setScoreCategoriesSettings(newScoreCategoriesSettings)
             }
             handleReset={() => setScoreCategoriesSettings(defaultScoreCategoriesSettings)}
