@@ -31,7 +31,7 @@ $transitionTime: 0.4s;
 
 .heatMeter {
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   box-sizing: content-box;
   box-shadow: -2px calcLightOffset(-2px) 7px 0 var(--color-light) inset,
     3px calcShadowOffset(3px) 8px 0 var(--color-shadow) inset;
