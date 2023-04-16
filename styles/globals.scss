@@ -1,15 +1,25 @@
 @import "mixins";
 
 :root {
+  // Base colors
   --color-surface: hsl(135 10% 92%);
   --color-on-surface: hsl(136 10% 28%);
-  --color-on-surface-dimmed: hsl(136 10% 65%);
   --color-primary: hsl(147 58% 32%);
   --color-secondary: hsl(232 29% 59%);
-  --color-error: hsl(2, 72%, 63%);
+  --color-error: hsl(2 72% 70%);
+  --color-match-contrast: white;
+  // Variants
+  --color-on-surface-dimmed: hsl(136 10% 65%);
+  // Lighting colors
   --color-light: hsl(0 0% 100% / 0.8);
   --color-shadow: hsl(137 10% 5% / 0.23);
-  --color-match-contrast: white;
+  --color-gradient-border: hsl(137 10% 5% / 0.15);
+  --color-overlay-light: hsl(0 0% 100% / 0.04);
+  --color-overlay-shadow: hsl(137 10% 5% / 0.03);
+  // Special colors
+  --color-heat-meter-start: hsl(42 72% 80%);
+  --color-heat-meter-end: var(--color-error);
+  // Other variables
   --font-family: "Jost", sans-serif;
 }
 

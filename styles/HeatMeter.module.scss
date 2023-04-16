@@ -1,0 +1,57 @@
+@import "mixins";
+
+$width: 18px;
+$height: 200px;
+$padding: 8px;
+$transitionTime: 0.4s;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: $width + $padding * 2 + 20px;
+  min-width: fit-content;
+}
+
+.icon {
+  transition: color $transitionTime ease-in-out;
+  font-size: $width + $padding;
+}
+
+// Fake border for the heat meter
+.borderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: $width + $padding;
+  background-image: $backgroundBorder;
+  padding: 0.5px;
+}
+
+.heatMeter {
+  display: flex;
+  align-items: end;
+  box-sizing: content-box;
+  box-shadow: -2px calcLightOffset(-2px) 7px 0 var(--color-light) inset,
+    3px calcShadowOffset(3px) 8px 0 var(--color-shadow) inset;
+  border-radius: $width + $padding;
+  background-image: $backgroundSurfaceOverlayInset;
+  background-color: var(--color-surface);
+  padding: $padding;
+  width: $width;
+  height: $height;
+
+  &__fill {
+    transition: $transitionTime ease-in-out;
+    border-radius: $width;
+    background-image: $backgroundSurfaceOverlay;
+    background-color: var(--color-error);
+    width: 100%;
+  }
+}
+
+:export {
+  width: $width;
+  height: $height;
+}

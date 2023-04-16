@@ -1,31 +1,33 @@
+import ScoreCategory from "./ScoreCategory";
+
 interface PerspectiveScores {
   summary: {
-    toxicity: number;
-    insult: number;
-    profanity: number;
-    threat: number;
+    [ScoreCategory.toxic]: number;
+    [ScoreCategory.insult]: number;
+    [ScoreCategory.profane]: number;
+    [ScoreCategory.threat]: number;
   };
 
   spans: {
-    toxicity: {
+    [ScoreCategory.toxic]: {
       begin: number;
       end: number;
       score: number;
     }[];
 
-    insult: {
+    [ScoreCategory.insult]: {
       begin: number;
       end: number;
       score: number;
     }[];
 
-    profanity: {
+    [ScoreCategory.profane]: {
       begin: number;
       end: number;
       score: number;
     }[];
 
-    threat: {
+    [ScoreCategory.threat]: {
       begin: number;
       end: number;
       score: number;

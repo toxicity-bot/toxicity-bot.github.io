@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useState } from "react";
 
-import { HeatMeter } from "@/lib/components/HeatMeter";
+import HeatMeter from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
 import ScoredSentenceList, { SentenceAndScore } from "@/lib/components/ScoredSentenceList";
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
@@ -53,19 +53,22 @@ export default function Home() {
 
   function formatForSentencesAnalysis(scores: PerspectiveScores): any {
     let temp = [];
-    for (let i = 0; i < scores.spans.insult.length; i++) {
+    for (let i = 0; i < scores.spans[ScoreCategory.toxic].length; i++) {
       let toxicity = Math.trunc(
         Math.max(
-          scores.spans.insult[i].score,
-          scores.spans.profanity[i].score,
-          scores.spans.threat[i].score,
-          scores.spans.toxicity[i].score
+          scores.spans[ScoreCategory.toxic][i].score,
+          scores.spans[ScoreCategory.profane][i].score,
+          scores.spans[ScoreCategory.insult][i].score,
+          scores.spans[ScoreCategory.threat][i].score
         ) * 100
       );
       if (toxicity >= toxicityThreshold) {
         temp.push({
           text: userInput
-            .substring(scores.spans.insult[i].begin, scores.spans.insult[i].end)
+            .substring(
+              scores.spans[ScoreCategory.toxic][i].begin,
+              scores.spans[ScoreCategory.toxic][i].end
+            )
             .trim(),
           percentage: toxicity,
           suggestion: "Kimi",
@@ -102,19 +105,13 @@ export default function Home() {
     setUserInput(temp);
   }
 
-  /**
-   * Get text to display for main score
-   */
+  // #FIXME: Replace with stateful operations
   const getPercentage = () => {
     if (scores === null) {
-      return 0;
+      return null;
     }
-    const highestScore = Object.entries(scores.summary).reduce((a, b) => (a[1] > b[1] ? a : b));
-    const category = highestScore[0];
-    const score = highestScore[1];
-    // Format score to percentage and round to 2 decimal places
-    const scorePercentage = Math.round(score * 10000) / 100;
-    return scorePercentage;
+    const [_, score] = Object.entries(scores.summary).reduce((a, b) => (a[1] > b[1] ? a : b));
+    return score;
   };
 
   return (
