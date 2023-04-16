@@ -1,5 +1,13 @@
 @use "sass:math";
 
+@function calcLightOffset($offset) {
+  @return math.ceil($offset * 0.65);
+}
+
+@function calcShadowOffset($offset) {
+  @return math.ceil($offset * 1.35);
+}
+
 @function makeShadow($lightOffset, $shadowOffset, $isInset: false) {
   $lightOffsetY: math.ceil($lightOffset * 0.65);
   $lightBlur: math.ceil(math.abs($lightOffset * 1.25));
@@ -19,14 +27,20 @@
 
 $backgroundSurfaceOverlay: linear-gradient(
   to right bottom,
-  rgba(black, 0.03),
+  var(--color-overlay-shadow),
   transparent,
-  rgba(white, 0.04)
+  var(--color-overlay-light)
 );
 
 $backgroundSurfaceOverlayInset: linear-gradient(
   to right bottom,
-  rgba(white, 0.04),
+  var(--color-overlay-light),
   transparent,
-  rgba(black, 0.03)
+  var(--color-overlay-shadow)
+);
+
+$backgroundBorder: linear-gradient(
+  to right bottom,
+  var(--color-light),
+  var(--color-gradient-border)
 );

@@ -105,19 +105,13 @@ export default function Home() {
     setUserInput(temp);
   }
 
-  /**
-   * Get text to display for main score
-   */
+  // #FIXME: Replace with stateful operations
   const getPercentage = () => {
     if (scores === null) {
-      return 0;
+      return null;
     }
-    const highestScore = Object.entries(scores.summary).reduce((a, b) => (a[1] > b[1] ? a : b));
-    const category = highestScore[0];
-    const score = highestScore[1];
-    // Format score to percentage and round to 2 decimal places
-    const scorePercentage = Math.round(score * 10000) / 100;
-    return scorePercentage;
+    const [_, score] = Object.entries(scores.summary).reduce((a, b) => (a[1] > b[1] ? a : b));
+    return score;
   };
 
   return (
