@@ -7,11 +7,29 @@
 }
 
 .heading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-top: 0;
 
   &__helpMenu {
+    padding-top: 6px;
     color: var(--color-secondary);
+    font-size: 18px;
   }
+}
+
+.settingsTitle {
+  padding: 6px;
+}
+
+.helpDiv .helpBox {
+  border: none;
+  border-radius: 20px;
+  background: var(--color-secondary);
+  padding: 20px;
+  width: 300px;
+  height: 200px;
 }
 
 .scoreCalcModeGroup {
