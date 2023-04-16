@@ -110,10 +110,8 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
             <FontAwesomeIcon
               data-tooltip-id="help"
               className={styles["heading__helpMenu"]}
+              data-tooltip-content='You can customize how your score above the meter is calculated. Select "Highest" to display the greatest negative score returned. To create your own weights, select "Weighted" and adjust the sliders.'
               icon={faCircleQuestion}
-              data-tooltip-content="You can customize how your score above the meter is calculated.
-                Select 'Highest' to display the greatest negative score returned.
-                To create your own weights, select 'Weighted' and adjust the sliders. "
             />
             {/* </small> */}
             <Tooltip
