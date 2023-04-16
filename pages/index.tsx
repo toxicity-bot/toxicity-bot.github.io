@@ -36,6 +36,10 @@ export default function Home() {
   const [adjustedScores, setAdjustedScores] = useState<SummaryScores | null>(null);
   const [sentencesAndScores, setSentencesAndScores] = useState<SentenceAndScore[]>([]);
 
+  useEffect(() => {
+    formatForSentencesAnalysis(scores);
+  }, [scoreCategoriesSettings, summaryScoreMode]);
+
   /** Get scores from API. */
   const updateScore = useCallback(async () => {
     const response = await fetch("/api/score", {
@@ -55,18 +59,23 @@ export default function Home() {
     setScores(scores);
   }, [userInput]);
 
-  const formatForSentencesAnalysis = useCallback(
-    (scores: PerspectiveScores) => {
+  const formatForSentencesAnalysis = useCallback((scores: PerspectiveScores | null) => {
+    if (scores) {
       let temp = [];
       for (let i = 0; i < scores.spans[ScoreCategory.toxic].length; i++) {
-        let toxicity = Math.trunc(
-          Math.max(
-            scores.spans[ScoreCategory.toxic][i].score,
-            scores.spans[ScoreCategory.profane][i].score,
-            scores.spans[ScoreCategory.insult][i].score,
-            scores.spans[ScoreCategory.threat][i].score
-          ) * 100
-        );
+        let toxicity;
+        if (summaryScoreMode === SummaryScoreMode.highest) {
+          toxicity = Math.trunc(
+            Math.max(
+              scores.spans[ScoreCategory.toxic][i].score,
+              scores.spans[ScoreCategory.profane][i].score,
+              scores.spans[ScoreCategory.insult][i].score,
+              scores.spans[ScoreCategory.threat][i].score
+            ) * 100
+          );
+        } else {
+          toxicity = Math.trunc(getWeightedScores(scores.spans[ScoreCategory.toxic][i].score, scores.spans[ScoreCategory.profane][i].score, scores.spans[ScoreCategory.insult][i].score, scores.spans[ScoreCategory.threat][i].score) * 100);
+        }
         if (toxicity >= toxicityThreshold) {
           temp.push({
             text: textFromLastUpdate
@@ -101,14 +110,39 @@ export default function Home() {
         return 0;
       });
       setSentencesAndScores(out);
-    },
-    [toxicityThreshold, textFromLastUpdate]
-  );
+    }
+  }, [toxicityThreshold, textFromLastUpdate]);
 
   function editInputText(original: string, suggestion: string) {
     let temp: string = userInput.replace(original, suggestion);
     setUserInput(temp);
   }
+
+  function getWeightedScores(toxicScore: number, profaneScore: number, insultScore: number, threatScore: number): number {
+    var sumWeight = 0, out = 0;
+    sumWeight += scoreCategoriesSettings[ScoreCategory.toxic].enabled ? scoreCategoriesSettings[ScoreCategory.toxic].weight : 0; 
+    sumWeight += scoreCategoriesSettings[ScoreCategory.profane].enabled ? scoreCategoriesSettings[ScoreCategory.profane].weight : 0; 
+    sumWeight += scoreCategoriesSettings[ScoreCategory.insult].enabled ? scoreCategoriesSettings[ScoreCategory.insult].weight : 0; 
+    sumWeight += scoreCategoriesSettings[ScoreCategory.threat].enabled ? scoreCategoriesSettings[ScoreCategory.threat].weight : 0; 
+    out += scoreCategoriesSettings[ScoreCategory.toxic].enabled ? toxicScore * (scoreCategoriesSettings[ScoreCategory.toxic].weight / sumWeight) : 0;
+    out += scoreCategoriesSettings[ScoreCategory.profane].enabled ? profaneScore * (scoreCategoriesSettings[ScoreCategory.profane].weight / sumWeight) : 0;
+    out += scoreCategoriesSettings[ScoreCategory.insult].enabled ? insultScore * (scoreCategoriesSettings[ScoreCategory.insult].weight / sumWeight) : 0;
+    out += scoreCategoriesSettings[ScoreCategory.threat].enabled ? threatScore * (scoreCategoriesSettings[ScoreCategory.threat].weight / sumWeight) : 0;
+    return out;
+  }
+
+  const getPercentage = () => {
+    if (scores === null) {
+      return null;
+    }
+    var score, _;
+    if (summaryScoreMode == SummaryScoreMode.highest) {
+      [_, score] = Object.entries(scores.summary).reduce((a, b) => (a[1] > b[1] ? a : b));
+    } else {
+      score = getWeightedScores(scores.summary[ScoreCategory.toxic], scores.summary[ScoreCategory.profane], scores.summary[ScoreCategory.insult], scores.summary[ScoreCategory.threat]);
+    }
+    return score;
+  };
 
   /** Automatically fetch the score every second if the text changes. */
   useEffect(() => {
