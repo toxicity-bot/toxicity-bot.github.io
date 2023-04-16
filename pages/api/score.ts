@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { google } from "googleapis";
 
 import PerspectiveScores from "@/lib/models/PerspectiveScores";
+import ScoreCategory from "@/lib/models/ScoreCategory";
 
 const API_KEY = "AIzaSyCZpPWR-zsuAHsdYrhVR1i0Qhr9Wc21FiY";
 const DISCOVERY_URL = "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1";
@@ -46,16 +47,16 @@ function parsePerspectiveApi(data: any): PerspectiveScores {
 
   return {
     summary: {
-      toxicity: data.attributeScores.TOXICITY.summaryScore.value,
-      insult: data.attributeScores.INSULT.summaryScore.value,
-      profanity: data.attributeScores.PROFANITY.summaryScore.value,
-      threat: data.attributeScores.THREAT.summaryScore.value,
+      [ScoreCategory.toxic]: data.attributeScores.TOXICITY.summaryScore.value,
+      [ScoreCategory.insult]: data.attributeScores.INSULT.summaryScore.value,
+      [ScoreCategory.profane]: data.attributeScores.PROFANITY.summaryScore.value,
+      [ScoreCategory.threat]: data.attributeScores.THREAT.summaryScore.value,
     },
     spans: {
-      toxicity: spans("TOXICITY"),
-      insult: spans("INSULT"),
-      profanity: spans("PROFANITY"),
-      threat: spans("THREAT"),
+      [ScoreCategory.toxic]: spans("TOXICITY"),
+      [ScoreCategory.insult]: spans("INSULT"),
+      [ScoreCategory.profane]: spans("PROFANITY"),
+      [ScoreCategory.threat]: spans("THREAT"),
     },
   };
 }

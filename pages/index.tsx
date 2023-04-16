@@ -53,19 +53,22 @@ export default function Home() {
 
   function formatForSentencesAnalysis(scores: PerspectiveScores): any {
     let temp = [];
-    for (let i = 0; i < scores.spans.insult.length; i++) {
+    for (let i = 0; i < scores.spans[ScoreCategory.toxic].length; i++) {
       let toxicity = Math.trunc(
         Math.max(
-          scores.spans.insult[i].score,
-          scores.spans.profanity[i].score,
-          scores.spans.threat[i].score,
-          scores.spans.toxicity[i].score
+          scores.spans[ScoreCategory.toxic][i].score,
+          scores.spans[ScoreCategory.profane][i].score,
+          scores.spans[ScoreCategory.insult][i].score,
+          scores.spans[ScoreCategory.threat][i].score
         ) * 100
       );
       if (toxicity >= toxicityThreshold) {
         temp.push({
           text: userInput
-            .substring(scores.spans.insult[i].begin, scores.spans.insult[i].end)
+            .substring(
+              scores.spans[ScoreCategory.toxic][i].begin,
+              scores.spans[ScoreCategory.toxic][i].end
+            )
             .trim(),
           percentage: toxicity,
           suggestion: "Kimi",
