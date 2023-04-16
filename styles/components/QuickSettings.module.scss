@@ -12,24 +12,23 @@
   align-items: center;
   margin-top: 0;
 
-  &__helpMenu {
-    padding-top: 6px;
-    color: var(--color-secondary);
-    font-size: 18px;
+  &__title {
+    padding-inline: 6px;
   }
-}
 
-.settingsTitle {
-  padding: 6px;
-}
+  &__helpIcon {
+    color: var(--color-secondary);
+  }
 
-.helpDiv .helpBox {
-  border: none;
-  border-radius: 20px;
-  background: var(--color-secondary);
-  padding: 20px;
-  width: 300px;
-  height: 200px;
+  &__helpTooltip {
+    border: none;
+    border-radius: 20px;
+    background: var(--color-secondary);
+    padding: 20px;
+    width: 300px;
+    font-weight: normal;
+    font-size: 1rem;
+  }
 }
 
 .scoreCalcModeGroup {
