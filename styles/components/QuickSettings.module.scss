@@ -7,10 +7,27 @@
 }
 
 .heading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-top: 0;
 
-  &__helpMenu {
+  &__title {
+    padding-inline: 6px;
+  }
+
+  &__helpIcon {
     color: var(--color-secondary);
+  }
+
+  &__helpTooltip {
+    border: none;
+    border-radius: 20px;
+    background: var(--color-secondary);
+    padding: 20px;
+    width: 300px;
+    font-weight: normal;
+    font-size: 1rem;
   }
 }
 

@@ -1,4 +1,7 @@
+import "react-tooltip/dist/react-tooltip.css";
+
 import { useEffect, useState } from "react";
+import { Tooltip } from "react-tooltip";
 
 import RangeInput from "@/lib/components/RangeInput";
 import ColorLayer from "@/lib/models/ColorLayer";
@@ -97,15 +100,21 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
   return (
     <div className={styles.mainContainer}>
       {/* Heading */}
-      <h2 className={styles.heading}>
-        <FontAwesomeIcon icon={faCog} /> Settings{" "}
-        <sup>
-          <small>
-            {/* #TODO: Add hover functionality */}
-            <FontAwesomeIcon className={styles["heading__helpMenu"]} icon={faCircleQuestion} />
-          </small>
-        </sup>
-      </h2>
+      <div className={styles.heading}>
+        <h2>
+          <FontAwesomeIcon icon={faCog} />
+          <span className={styles.heading__title}>Settings</span>
+          <sup>
+            <FontAwesomeIcon
+              className={styles.heading__helpIcon}
+              data-tooltip-id="help"
+              data-tooltip-content='You can customize how your score above the meter is calculated. Select "Highest" to display the greatest negative score returned. To create your own weights, select "Weighted" and adjust the sliders.'
+              icon={faCircleQuestion}
+            />
+          </sup>
+          <Tooltip className={styles.heading__helpTooltip} id="help" place="right" />
+        </h2>
+      </div>
 
       {/* Toggle for summary score mode */}
       <div className={styles.scoreCalcModeGroup}>
