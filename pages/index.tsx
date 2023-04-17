@@ -15,6 +15,7 @@ import {
   calcAdjustedScoresWeighted,
 } from "@/lib/utils/scoreCalculations";
 import styles from "@/styles/Home.module.scss";
+import SuggestedEdit from "@/lib/components/SuggestedEdit";
 
 const DEFAULT_SCORE_THRESHOLD = 0.4;
 const AUTO_FETCH_INTERVAL = 1000;
@@ -29,6 +30,8 @@ export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [userInput, setUserInput] = useState("");
   const [textFromLastUpdate, setTextFromLastUpdate] = useState("");
+  const [suggestedEdit, setSuggestedEdit] = useState("")
+
 
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
@@ -68,6 +71,24 @@ export default function Home() {
     setAllCategorySettings(DEFAULT_CATEGORY_SETTINGS);
     setScoreThreshold(DEFAULT_SCORE_THRESHOLD);
   }
+
+  const updateSuggestion = async () => {
+    const response = await fetch("/api/moderation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: userInput }),
+    });
+    // data is OpenAI suggested edit response or error
+    const data = await response.json();
+    if (data.error) {
+      console.error(data.error);
+      return;
+    }
+    const suggestionText = data["rewritten"];
+    setSuggestedEdit(suggestionText);
+  };
 
   /* Automatically fetch the score based on the interval if the text changes.
    * Sets: scores, textFromLastUpdate
@@ -155,6 +176,11 @@ export default function Home() {
             handleDisplayThresholdChange={(newThreshold) => setScoreThreshold(newThreshold)}
             handleReset={resetQuickSettings}
           />
+        </div>
+
+        <div className={styles.suggestedEditText}>
+          <SuggestedEdit text={suggestedEdit} />
+          <button onClick={updateSuggestion} value={"Update suggestion"} />
         </div>
       </div>
     </>
