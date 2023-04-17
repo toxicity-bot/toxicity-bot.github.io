@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import HeatMeter from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
@@ -16,7 +16,7 @@ import {
 } from "@/lib/utils/scoreCalculations";
 import styles from "@/styles/Home.module.scss";
 
-const AUTO_FETCH_INTERVAL = 500;
+const AUTO_FETCH_INTERVAL = 1000;
 const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
   [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
   [ScoreCategory.profane]: { enabled: true, weight: 0.5 },
@@ -25,6 +25,7 @@ const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
 };
 
 export default function Home() {
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [userInput, setUserInput] = useState("");
   const [textFromLastUpdate, setTextFromLastUpdate] = useState("");
 
@@ -42,12 +43,13 @@ export default function Home() {
    * @modifies scores
    */
   const updateScore = useCallback(async () => {
+    const text: string = textareaRef.current?.value ?? "";
     const response = await fetch("/api/score", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ text: userInput }),
+      body: JSON.stringify({ text: text }),
     });
     // data is PerspectiveScores interface or error
     const data = await response.json();
@@ -57,7 +59,7 @@ export default function Home() {
     }
     const scores = data as PerspectiveScores;
     setScores(scores);
-  }, [userInput]);
+  }, []);
 
   const formatForSentencesAnalysis = useCallback(
     (scores: PerspectiveScores | null) => {
@@ -168,17 +170,19 @@ export default function Home() {
   /** Automatically fetch the score based on the interval if the text changes. */
   useEffect(() => {
     const interval = setInterval(() => {
-      if (userInput === "") {
+      // Use ref so interval isn't restarted when text changes
+      const text = textareaRef.current?.value ?? "";
+      if (text === "") {
         setScores(null);
         setTextFromLastUpdate("");
         return;
       }
-      if (userInput === textFromLastUpdate) return;
+      if (text === textFromLastUpdate) return;
       updateScore();
-      setTextFromLastUpdate(userInput);
+      setTextFromLastUpdate(text);
     }, AUTO_FETCH_INTERVAL);
     return () => clearInterval(interval);
-  });
+  }, [textFromLastUpdate, updateScore]);
 
   /** Calculate the adjusted scores */
   useEffect(() => {
@@ -220,6 +224,7 @@ export default function Home() {
             <span>Input text to test for toxicity:</span>
           </div>
           <textarea
+            ref={textareaRef}
             className={styles.inputForm__textarea}
             maxLength={15000}
             onChange={(e) => setUserInput(e.currentTarget.value)}
