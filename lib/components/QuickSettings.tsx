@@ -85,17 +85,19 @@ interface QuickSettingsProps {
 }
 
 export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
-  function onToggleClick(event: React.ChangeEvent<HTMLInputElement>): void {
+  function onModeSwitch(event: React.ChangeEvent<HTMLInputElement>): void {
     const summaryScoreMode = event.currentTarget.checked
       ? SummaryScoreMode.weighted
       : SummaryScoreMode.highest;
     props.handleSummaryScoreModeChange(summaryScoreMode);
   }
 
-  function onSliderChange(category: ScoreCategory, enabled: boolean, weight: number): void {
+  function onSettingChange(category: ScoreCategory, enabled: boolean, weight: number): void {
+    // Prevent disabling all categories
+    const isLastEnabled = Object.values(props.settings).filter((s) => s.enabled).length === 1;
     props.handleScoreCategorySettingsChange({
       ...props.settings,
-      ...{ [category]: { enabled: enabled, weight: weight } },
+      ...{ [category]: { enabled: isLastEnabled ? true : enabled, weight } },
     });
   }
 
@@ -127,7 +129,7 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
           <input
             type="checkbox"
             value={props.summaryScoreMode === SummaryScoreMode.weighted ? "on" : "off"}
-            onChange={onToggleClick}
+            onChange={onModeSwitch}
           />
           <span className={styles["toggleSwitch__switch"]}></span>
         </label>
@@ -148,7 +150,7 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
               label={ScoreCategoryStrings[category]}
               enabled={settings.enabled}
               value={settings.weight}
-              onChange={onSliderChange}
+              onChange={onSettingChange}
             />
           );
         })}
