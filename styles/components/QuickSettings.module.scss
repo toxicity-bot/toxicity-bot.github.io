@@ -119,4 +119,35 @@
   input {
     width: 80px;
   }
+
+  .toggleSliders {
+    grid-gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.thresholdSliderBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: 0.1s ease-out;
+  box-shadow: makeShadow($lightOffset: -3px, $shadowOffset: 4px);
+  border-radius: 25px;
+  background: linear-gradient(to right bottom, rgba(black, 0.03), transparent, rgba(white, 0.05));
+  width: 245px;
+  height: 80px;
+  color: var(--color-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  
+  input {
+    width: 200px;
+  }
+}
+
+.thresholdSlider {
+  width: 200px;
 }

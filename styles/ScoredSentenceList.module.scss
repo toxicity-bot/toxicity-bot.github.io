@@ -1,3 +1,5 @@
+@import "./mixins";
+
 .box {
   margin-top: 20px;
   margin-right: 10%;
@@ -12,8 +14,15 @@
 .individualItem {
   margin: 1px 1px 1px 1px;
   margin: 10px;
-  border-radius: 5px;
+  // border-radius: 5px;
   background-color: #f8faf9; /* #TODO: Replace hardcoded color */
+
+
+  transition: 0.1s ease-out;
+  box-shadow: makeShadow($lightOffset: -3px, $shadowOffset: 4px);
+  border-radius: 25px;
+  background: linear-gradient(to right bottom, rgba(black, 0.03), transparent, rgba(white, 0.05));
+  color: var(--color-secondary);
 }
 
 .text {

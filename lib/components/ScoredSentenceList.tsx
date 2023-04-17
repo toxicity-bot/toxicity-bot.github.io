@@ -1,16 +1,8 @@
-import Popup from "reactjs-popup";
-
 import styles from "@/styles/ScoredSentenceList.module.scss";
 
 export interface SentenceAndScore {
   text: string;
   percentage: number;
-  suggestion: string;
-}
-
-interface textEnablePair {
-  text: string;
-  enabled: boolean;
 }
 
 export default function ScoredSentenceList(props: any) {
@@ -21,7 +13,7 @@ export default function ScoredSentenceList(props: any) {
       <p>No toxic sentence! Good job!</p>
     </div>
   ) : (
-    <div className={styles.box}>
+    <div>
       {sentenceAndScores.map((item: SentenceAndScore) => (
         <div key={item.text} className={styles.individualItem}>
           <p className={`${styles.inline} ${styles.percentageSign}`} id={styles.pctg}>
@@ -36,14 +28,6 @@ export default function ScoredSentenceList(props: any) {
           >
             {item.text}
           </p>
-          <Popup
-            trigger={<button className={styles.suggestButton}> Suggestions </button>}
-            position="right center"
-          >
-            <div className={`${styles.suggestionBox}`}>
-              <p>{item.suggestion}</p>
-            </div>
-          </Popup>
         </div>
       ))}
     </div>

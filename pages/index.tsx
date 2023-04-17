@@ -17,6 +17,7 @@ import {
 } from "@/lib/utils/scoreCalculations";
 import styles from "@/styles/Home.module.scss";
 
+const DEFAULT_SCORE_THRESHOLD = 0.4;
 const AUTO_FETCH_INTERVAL = 1000;
 const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
   [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
@@ -24,8 +25,6 @@ const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
   [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
   [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
 };
-// #TODO: Make this a setting
-const TOXICITY_THRESHOLD = 0.35;
 
 export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -35,6 +34,7 @@ export default function Home() {
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
   const [allCategorySettings, setAllCategorySettings] = useState(DEFAULT_CATEGORY_SETTINGS);
+  const [scoreThreshold, setScoreThreshold] = useState(0.4);
 
   // Scores
   const [scores, setScores] = useState<PerspectiveScores | null>(null);
@@ -71,11 +71,10 @@ export default function Home() {
     let sentenceScores: SentenceAndScore[] = [];
     for (let i = 0; i < adjustedScores.spans.length; ++i) {
       const summarySpanScore: SummarySpanScore = adjustedScores.spans[i];
-      if (summarySpanScore.summaryScore.score >= TOXICITY_THRESHOLD) {
+      if (summarySpanScore.summaryScore.score >= scoreThreshold) {
         sentenceScores.push({
           text: textFromLastUpdate.substring(summarySpanScore.begin, summarySpanScore.end).trim(),
           percentage: summarySpanScore.summaryScore.score,
-          suggestion: "Kimi", // #FIXME: Actual suggestions
         });
       }
     }
@@ -86,7 +85,12 @@ export default function Home() {
     // Sort by score descending
     sentenceScores.sort((a, b) => b.percentage - a.percentage);
     return sentenceScores;
-  }, [adjustedScores, textFromLastUpdate]);
+  }, [adjustedScores, textFromLastUpdate, scoreThreshold]);
+
+  function resetQuickSettings() {
+    setAllCategorySettings(DEFAULT_CATEGORY_SETTINGS)
+    setScoreThreshold(DEFAULT_SCORE_THRESHOLD);
+  }
 
   function editInputText(original: string, suggestion: string) {
     const temp: string = userInput.replace(original, suggestion);
@@ -139,7 +143,7 @@ export default function Home() {
     }
     const sentenceAndScores = getFilteredAndSortedSentences();
     setSentencesAndScores(sentenceAndScores);
-  }, [adjustedScores, getFilteredAndSortedSentences]);
+  }, [adjustedScores, scoreThreshold, getFilteredAndSortedSentences]);
 
   return (
     <>
@@ -186,7 +190,9 @@ export default function Home() {
             }
             settings={allCategorySettings}
             handleScoreCategorySettingsChange={(newSettings) => setAllCategorySettings(newSettings)}
-            handleReset={() => setAllCategorySettings(DEFAULT_CATEGORY_SETTINGS)}
+            threshold={scoreThreshold}
+            handleDisplayThresholdChange={(newThreshold) => setScoreThreshold(newThreshold)}
+            handleReset={resetQuickSettings}
           />
         </div>
       </div>
