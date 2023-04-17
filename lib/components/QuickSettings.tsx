@@ -14,6 +14,7 @@ import {
 import styles from "@/styles/components/QuickSettings.module.scss";
 import { faCircleQuestion, faCog, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { enumToArray } from "../utils/enumManip";
 
 type ToggleSliderProps = {
   id: number;
@@ -73,6 +74,8 @@ function ToggleSlider(props: ToggleSliderProps): JSX.Element {
 }
 ToggleSlider.defaultProps = defaultToggleSliderProps;
 
+const SCORE_CATEGORIES = enumToArray(ScoreCategory);
+
 interface QuickSettingsProps {
   summaryScoreMode: SummaryScoreMode;
   handleSummaryScoreModeChange: (summaryScoreMode: SummaryScoreMode) => void;
@@ -82,10 +85,6 @@ interface QuickSettingsProps {
 }
 
 export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
-  const scoreCategories = Object.keys(ScoreCategory)
-    .filter((key) => isNaN(Number(key)))
-    .map((key) => ScoreCategory[key as keyof typeof ScoreCategory]);
-
   function onToggleClick(event: React.ChangeEvent<HTMLInputElement>): void {
     const summaryScoreMode = event.currentTarget.checked
       ? SummaryScoreMode.weighted
@@ -140,7 +139,7 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
 
       {/* Toggles and sliders for each score category */}
       <div className={styles.toggleSliders}>
-        {scoreCategories.map((category, _) => {
+        {SCORE_CATEGORIES.map((category, _) => {
           const settings = props.settings[category];
           return (
             <ToggleSlider

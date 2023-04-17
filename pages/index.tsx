@@ -9,8 +9,11 @@ import PerspectiveScores, {
   ScoreCategory,
   SummaryScoreMode,
   SummaryScores,
-  SummarySpanScore,
 } from "@/lib/models/perspectiveScores";
+import {
+  calcAdjustedScoresHighest,
+  calcAdjustedScoresWeighted,
+} from "@/lib/utils/scoreCalculations";
 import styles from "@/styles/Home.module.scss";
 
 const AUTO_FETCH_INTERVAL = 500;
@@ -36,11 +39,9 @@ export default function Home() {
   const [adjustedScores, setAdjustedScores] = useState<SummaryScores | null>(null);
   const [sentencesAndScores, setSentencesAndScores] = useState<SentenceAndScore[]>([]);
 
-  useEffect(() => {
-    formatForSentencesAnalysis(scores);
-  }, [allCategorySettings, summaryScoreMode]);
-
-  /** Get scores from API. */
+  /** Get scores from API.
+   * @modifies scores
+   */
   const updateScore = useCallback(async () => {
     const response = await fetch("/api/score", {
       method: "POST",
@@ -165,7 +166,7 @@ export default function Home() {
     return out;
   }
 
-  /** Automatically fetch the score every second if the text changes. */
+  /** Automatically fetch the score based on the interval if the text changes. */
   useEffect(() => {
     const interval = setInterval(() => {
       if (userInput === "") {
@@ -186,31 +187,13 @@ export default function Home() {
       setAdjustedScores(null);
       return;
     }
-    // #FIXME: Check settings
-
-    // Calculate the main score
-    const [mainCategory, mainScore]: [ScoreCategory, number] = Object.entries(scores.summary)
-      .map(([category, score]: [string, number]): [ScoreCategory, number] => [
-        ScoreCategory[category as keyof typeof ScoreCategory],
-        score,
-      ])
-      .reduce((prev, curr) => (prev[1] > curr[1] ? prev : curr));
-
-    // Calculate scores for each span
-    const numSpans = scores.spans[ScoreCategory.toxic].length;
-
-    // Initialize an empty array of size numSpans
-    const spanScores: (SummarySpanScore | null)[] = Array(numSpans).fill(null);
-
-    // #FIXME: Fill in the array with the scores
-
-    setAdjustedScores({
-      main: {
-        category: mainCategory,
-        score: mainScore,
-      },
-      spans: [],
-    });
+    if (summaryScoreMode === SummaryScoreMode.highest) {
+      setAdjustedScores(calcAdjustedScoresHighest(scores, allCategorySettings));
+    } else if (summaryScoreMode === SummaryScoreMode.weighted) {
+      setAdjustedScores(calcAdjustedScoresWeighted(scores, allCategorySettings));
+    } else {
+      throw new Error("Invalid or unimplemented summary score mode");
+    }
   }, [scores, summaryScoreMode, allCategorySettings]);
 
   // #FIXME: Use adjustedScores instead of scores
@@ -247,7 +230,6 @@ export default function Home() {
           />
         </form>
 
-        {/* #FIXME: Add state for percentage */}
         <div className={styles.heatmeter}>
           <HeatMeter percentage={adjustedScores?.main.score ?? null} />
         </div>
