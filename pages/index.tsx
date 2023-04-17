@@ -98,7 +98,7 @@ export default function Home() {
 
   const fakeUserDefault = () => {
     setAllCategorySettings(FAKE_DEFAULT_CATEGORY_SETTINGS);
-  }
+  };
 
   /* Automatically fetch the score based on the interval if the text changes.
    * Sets: scores, textFromLastUpdate
