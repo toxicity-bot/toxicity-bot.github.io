@@ -141,7 +141,7 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
 
       {/* Toggles and sliders for each score category */}
       <div className={styles.toggleSliders}>
-        {SCORE_CATEGORIES.map((category, _) => {
+        {SCORE_CATEGORIES.map((category) => {
           const settings = props.settings[category];
           return (
             <ToggleSlider
