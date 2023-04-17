@@ -63,10 +63,9 @@ export default function HeatMeter({ percentage }: HeatMeterProps): JSX.Element {
     const endColor = new Color(cssVars.getPropertyValue("--color-heat-meter-end"));
     const colorRange = startColor.range(endColor);
     // Need to cast to Color b/c of a bug in colorjs.io
-    let color = colorRange(percentage) as unknown as Color;
+    const color = colorRange(percentage) as unknown as Color;
     setFillColor(color.toString());
     // Ensure proper readability contrast
-    // const backgroundColor = new Color(cssVars.getPropertyValue("--color-surface"));
     color.hsl.l -= 15;
     setEmojiColor(color.toString());
   }, [percentage]);

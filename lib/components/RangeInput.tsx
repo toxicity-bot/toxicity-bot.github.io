@@ -24,7 +24,7 @@ const defaultRangeInputProps = {
 export default function RangeInput(props: RangeInputProps): JSX.Element {
   const getColors = useCallback((): { emptyColor: string; fillColor: string } => {
     const cssVars = getComputedStyle(document.documentElement);
-    let emptyColor = cssVars.getPropertyValue("--color-on-surface-dimmed");
+    const emptyColor = cssVars.getPropertyValue("--color-on-surface-dimmed");
     let fillColor: string;
     switch (props.colorLayer) {
       case ColorLayer.primary:

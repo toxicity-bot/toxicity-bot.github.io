@@ -1,49 +1,57 @@
 import Head from "next/head";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import HeatMeter from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
 import ScoredSentenceList, { SentenceAndScore } from "@/lib/components/ScoredSentenceList";
-import PerspectiveScores from "@/lib/models/PerspectiveScores";
-import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
-import ScoreCategory from "@/lib/models/ScoreCategory";
-import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
-import SummaryScores from "@/lib/models/SummaryScores";
+import PerspectiveScores, {
+  AllScoreCategorySettings,
+  ScoreCategory,
+  SummaryScoreMode,
+  SummaryScores,
+  SummarySpanScore,
+} from "@/lib/models/perspectiveScores";
+import {
+  calcAdjustedScoresHighest,
+  calcAdjustedScoresWeighted,
+} from "@/lib/utils/scoreCalculations";
 import styles from "@/styles/Home.module.scss";
 
-const AUTO_FETCH_INTERVAL = 500;
+const AUTO_FETCH_INTERVAL = 1000;
+const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
+  [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
+  [ScoreCategory.profane]: { enabled: true, weight: 0.5 },
+  [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
+  [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
+};
+// #TODO: Make this a setting
+const TOXICITY_THRESHOLD = 0.35;
 
 export default function Home() {
-  const defaultScoreCategoriesSettings: ScoreCategoriesSettings = {
-    [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
-    [ScoreCategory.profane]: { enabled: true, weight: 0.5 },
-    [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
-    [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
-  };
-
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [userInput, setUserInput] = useState("");
   const [textFromLastUpdate, setTextFromLastUpdate] = useState("");
 
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
-  const [scoreCategoriesSettings, setScoreCategoriesSettings] = useState(
-    defaultScoreCategoriesSettings
-  );
-  const [toxicityThreshold, setToxicityThreshold] = useState(40);
+  const [allCategorySettings, setAllCategorySettings] = useState(DEFAULT_CATEGORY_SETTINGS);
 
   // Scores
   const [scores, setScores] = useState<PerspectiveScores | null>(null);
   const [adjustedScores, setAdjustedScores] = useState<SummaryScores | null>(null);
   const [sentencesAndScores, setSentencesAndScores] = useState<SentenceAndScore[]>([]);
 
-  /** Get scores from API. */
+  /** Get scores from API.
+   * @modifies scores
+   */
   const updateScore = useCallback(async () => {
+    const text: string = textareaRef.current?.value ?? "";
     const response = await fetch("/api/score", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ text: userInput }),
+      body: JSON.stringify({ text: text }),
     });
     // data is PerspectiveScores interface or error
     const data = await response.json();
@@ -53,122 +61,85 @@ export default function Home() {
     }
     const scores = data as PerspectiveScores;
     setScores(scores);
-  }, [userInput]);
+  }, []);
 
-  const formatForSentencesAnalysis = useCallback(
-    (scores: PerspectiveScores) => {
-      let temp = [];
-      for (let i = 0; i < scores.spans[ScoreCategory.toxic].length; i++) {
-        let toxicity = Math.trunc(
-          Math.max(
-            scores.spans[ScoreCategory.toxic][i].score,
-            scores.spans[ScoreCategory.profane][i].score,
-            scores.spans[ScoreCategory.insult][i].score,
-            scores.spans[ScoreCategory.threat][i].score
-          ) * 100
-        );
-        if (toxicity >= toxicityThreshold) {
-          temp.push({
-            text: textFromLastUpdate
-              .substring(
-                scores.spans[ScoreCategory.toxic][i].begin,
-                scores.spans[ScoreCategory.toxic][i].end
-              )
-              .trim(),
-            percentage: toxicity,
-            suggestion: "Kimi",
-          });
-        }
+  /** Get list of individual spans/sentences and their scores (over the threshold). */
+  const getFilteredAndSortedSentences = useCallback((): SentenceAndScore[] => {
+    if (!adjustedScores) {
+      return [];
+    }
+    let sentenceScores: SentenceAndScore[] = [];
+    for (let i = 0; i < adjustedScores.spans.length; ++i) {
+      const summarySpanScore: SummarySpanScore = adjustedScores.spans[i];
+      if (summarySpanScore.summaryScore.score >= TOXICITY_THRESHOLD) {
+        sentenceScores.push({
+          text: textFromLastUpdate.substring(summarySpanScore.begin, summarySpanScore.end).trim(),
+          percentage: summarySpanScore.summaryScore.score,
+          suggestion: "Kimi", // #FIXME: Actual suggestions
+        });
       }
-      // get rid of duplicate texts
-      var out = temp.reduce(function (p: any, c: any) {
-        if (
-          !p.some(function (el: any) {
-            return el.text === c.text;
-          })
-        )
-          p.push(c);
-        return p;
-      }, []);
-      // sort by percentage
-      out.sort(function (left: SentenceAndScore, right: SentenceAndScore): number {
-        if (left.percentage < right.percentage) {
-          return 1;
-        }
-        if (left.percentage > right.percentage) {
-          return -1;
-        }
-        return 0;
-      });
-      setSentencesAndScores(out);
-    },
-    [toxicityThreshold, textFromLastUpdate]
-  );
+    }
+    // Remove duplicates sentences
+    sentenceScores = sentenceScores.filter(
+      (curr, idx, self) => idx === self.findIndex((other) => other.text === curr.text)
+    );
+    // Sort by score descending
+    sentenceScores.sort((a, b) => b.percentage - a.percentage);
+    return sentenceScores;
+  }, [adjustedScores, textFromLastUpdate]);
 
   function editInputText(original: string, suggestion: string) {
-    let temp: string = userInput.replace(original, suggestion);
+    const temp: string = userInput.replace(original, suggestion);
     setUserInput(temp);
   }
 
-  /** Automatically fetch the score every second if the text changes. */
+  /* Automatically fetch the score based on the interval if the text changes.
+   * Sets: scores, textFromLastUpdate
+   */
   useEffect(() => {
     const interval = setInterval(() => {
-      if (userInput === "") {
+      // Use ref so interval isn't restarted when text changes
+      const text = textareaRef.current?.value ?? "";
+      if (text === "") {
         setScores(null);
         setTextFromLastUpdate("");
         return;
       }
-      if (userInput === textFromLastUpdate) return;
+      if (text === textFromLastUpdate) return;
       updateScore();
-      setTextFromLastUpdate(userInput);
+      setTextFromLastUpdate(text);
     }, AUTO_FETCH_INTERVAL);
     return () => clearInterval(interval);
-  });
+  }, [textFromLastUpdate, updateScore]);
 
-  /** Calculate the adjusted scores */
+  /* Calculate the adjusted scores
+   * Sets: adjustedScores
+   */
   useEffect(() => {
     if (scores === null) {
       setAdjustedScores(null);
       return;
     }
-    // #FIXME: Check settings
+    if (summaryScoreMode === SummaryScoreMode.highest) {
+      setAdjustedScores(calcAdjustedScoresHighest(scores, allCategorySettings));
+    } else if (summaryScoreMode === SummaryScoreMode.weighted) {
+      setAdjustedScores(calcAdjustedScoresWeighted(scores, allCategorySettings));
+    } else {
+      throw new Error("Invalid or unimplemented summary score mode");
+    }
+  }, [scores, summaryScoreMode, allCategorySettings]);
 
-    // Calculate the main score
-    const [mainCategory, mainScore]: [ScoreCategory, number] = Object.entries(scores.summary)
-      .map(([category, score]: [string, number]): [ScoreCategory, number] => [
-        ScoreCategory[category as keyof typeof ScoreCategory],
-        score,
-      ])
-      .reduce((prev, curr) => (prev[1] > curr[1] ? prev : curr));
-
-    // Calculate scores for each span
-    const numSpans = scores.spans[ScoreCategory.toxic].length;
-
-    // Initialize an empty array of size numSpans
-    const spanScores: {
-      begin: number;
-      end: number;
-      score: number;
-      category?: ScoreCategory;
-    }[] = Array(numSpans).fill(null);
-
-    // #FIXME: Fill in the array with the scores
-
-    setAdjustedScores({
-      main: {
-        category: mainCategory,
-        score: mainScore,
-      },
-      spans: spanScores,
-    });
-  }, [scores, summaryScoreMode, scoreCategoriesSettings]);
-
-  // #FIXME: Use adjustedScores instead of scores
-  /** Recalculate sentence scores automatically. */
+  /* Regnerate the list of sentences and scores based on the adjusted scores
+   * Sets: sentencesAndScores
+   */
   useEffect(() => {
-    if (scores === null) return;
-    formatForSentencesAnalysis(scores);
-  }, [formatForSentencesAnalysis, scores, toxicityThreshold]);
+    if (adjustedScores === null) {
+      setSentencesAndScores([]);
+      return;
+    }
+    const sentenceAndScores = getFilteredAndSortedSentences();
+    setSentencesAndScores(sentenceAndScores);
+  }, [adjustedScores, getFilteredAndSortedSentences]);
 
   return (
     <>
@@ -188,16 +159,14 @@ export default function Home() {
             <span>Input text to test for toxicity:</span>
           </div>
           <textarea
-            className={styles["inputForm__textarea"]}
+            ref={textareaRef}
+            className={styles.inputForm__textarea}
             maxLength={15000}
-            onInput={(e) => {
-              setUserInput(e.currentTarget.value);
-            }}
+            onChange={(e) => setUserInput(e.currentTarget.value)}
             value={userInput}
           />
         </form>
 
-        {/* #FIXME: Add state for percentage */}
         <div className={styles.heatmeter}>
           <HeatMeter percentage={adjustedScores?.main.score ?? null} />
         </div>
@@ -215,11 +184,9 @@ export default function Home() {
             handleSummaryScoreModeChange={(newSummaryScoreMode) =>
               setSummaryScoreMode(newSummaryScoreMode)
             }
-            scoreCategoriesSettings={scoreCategoriesSettings}
-            handleScoreCategoriesSettingsChange={(newScoreCategoriesSettings) =>
-              setScoreCategoriesSettings(newScoreCategoriesSettings)
-            }
-            handleReset={() => setScoreCategoriesSettings(defaultScoreCategoriesSettings)}
+            settings={allCategorySettings}
+            handleScoreCategorySettingsChange={(newSettings) => setAllCategorySettings(newSettings)}
+            handleReset={() => setAllCategorySettings(DEFAULT_CATEGORY_SETTINGS)}
           />
         </div>
       </div>

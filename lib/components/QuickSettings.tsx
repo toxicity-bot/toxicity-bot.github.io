@@ -5,12 +5,16 @@ import { Tooltip } from "react-tooltip";
 
 import RangeInput from "@/lib/components/RangeInput";
 import ColorLayer from "@/lib/models/ColorLayer";
-import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
-import ScoreCategory, { ScoreCategoryStrings } from "@/lib/models/ScoreCategory";
-import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
+import {
+  AllScoreCategorySettings,
+  ScoreCategory,
+  ScoreCategoryStrings,
+  SummaryScoreMode,
+} from "@/lib/models/perspectiveScores";
 import styles from "@/styles/components/QuickSettings.module.scss";
 import { faCircleQuestion, faCog, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { enumToArray } from "../utils/enumManip";
 
 type ToggleSliderProps = {
   id: number;
@@ -70,30 +74,30 @@ function ToggleSlider(props: ToggleSliderProps): JSX.Element {
 }
 ToggleSlider.defaultProps = defaultToggleSliderProps;
 
+const SCORE_CATEGORIES = enumToArray(ScoreCategory);
+
 interface QuickSettingsProps {
   summaryScoreMode: SummaryScoreMode;
   handleSummaryScoreModeChange: (summaryScoreMode: SummaryScoreMode) => void;
-  scoreCategoriesSettings: ScoreCategoriesSettings;
-  handleScoreCategoriesSettingsChange: (scoreCategoriesSettings: ScoreCategoriesSettings) => void;
+  settings: AllScoreCategorySettings;
+  handleScoreCategorySettingsChange: (settings: AllScoreCategorySettings) => void;
   handleReset: () => void;
 }
 
 export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
-  const scoreCategories = Object.keys(ScoreCategory)
-    .filter((key) => isNaN(Number(key)))
-    .map((key) => ScoreCategory[key as keyof typeof ScoreCategory]);
-
-  function onToggleClick(event: React.ChangeEvent<HTMLInputElement>): void {
+  function onModeSwitch(event: React.ChangeEvent<HTMLInputElement>): void {
     const summaryScoreMode = event.currentTarget.checked
       ? SummaryScoreMode.weighted
       : SummaryScoreMode.highest;
     props.handleSummaryScoreModeChange(summaryScoreMode);
   }
 
-  function onSliderChange(category: ScoreCategory, enabled: boolean, weight: number): void {
-    props.handleScoreCategoriesSettingsChange({
-      ...props.scoreCategoriesSettings,
-      ...{ [category]: { enabled: enabled, weight: weight } },
+  function onSettingChange(category: ScoreCategory, enabled: boolean, weight: number): void {
+    // Prevent disabling all categories
+    const isLastEnabled = Object.values(props.settings).filter((s) => s.enabled).length === 1;
+    props.handleScoreCategorySettingsChange({
+      ...props.settings,
+      ...{ [category]: { enabled: isLastEnabled ? true : enabled, weight } },
     });
   }
 
@@ -125,7 +129,7 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
           <input
             type="checkbox"
             value={props.summaryScoreMode === SummaryScoreMode.weighted ? "on" : "off"}
-            onChange={onToggleClick}
+            onChange={onModeSwitch}
           />
           <span className={styles["toggleSwitch__switch"]}></span>
         </label>
@@ -137,8 +141,8 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
 
       {/* Toggles and sliders for each score category */}
       <div className={styles.toggleSliders}>
-        {scoreCategories.map((category, _) => {
-          const settings = props.scoreCategoriesSettings[category];
+        {SCORE_CATEGORIES.map((category) => {
+          const settings = props.settings[category];
           return (
             <ToggleSlider
               key={category}
@@ -146,7 +150,7 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
               label={ScoreCategoryStrings[category]}
               enabled={settings.enabled}
               value={settings.weight}
-              onChange={onSliderChange}
+              onChange={onSettingChange}
             />
           );
         })}
