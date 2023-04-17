@@ -8,11 +8,11 @@
   @return math.ceil($offset * 1.35);
 }
 
-@function makeShadow($lightOffset, $shadowOffset, $isInset: false) {
+@function makeShadow($lightOffset, $shadowOffset, $blurMultiplier: 1.5, $isInset: false) {
   $lightOffsetY: math.ceil($lightOffset * 0.65);
-  $lightBlur: math.ceil(math.abs($lightOffset * 1.25));
+  $lightBlur: math.ceil(math.abs($lightOffset * $blurMultiplier * 0.8));
   $shadowOffsetY: math.ceil($shadowOffset * 1.35);
-  $shadowBlur: math.ceil($shadowOffset * 1.5);
+  $shadowBlur: math.ceil($shadowOffset * $blurMultiplier);
 
   @if $isInset {
     @return 0 0 0 0 var(--color-light), 0 0 0 0 var(--color-shadow),

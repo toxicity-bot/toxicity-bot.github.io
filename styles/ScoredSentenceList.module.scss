@@ -1,61 +1,32 @@
-.box {
-  margin-top: 20px;
-  margin-right: 10%;
-  border-width: 2px;
-  border-color: #e6e7e7; /* #TODO: Replace hardcoded color */
+@import "./mixins";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.sentence {
+  display: flex;
+  transition: 0.2s ease-in-out;
+  box-shadow: -2px -2px 4px 0 var(--color-light), 2px 2px 8px -2px var(--color-shadow),
+    inset 0 0 0 0 var(--color-light), inset 0 0 0 0 var(--color-shadow);
   border-radius: 15px;
-  background-color: #d9e0db; /* #TODO: Replace hardcoded color */
-  padding: 5px;
-  width: 70%;
-}
+  padding-block: 10px;
+  color: var(--color-on-surface);
 
-.individualItem {
-  margin: 1px 1px 1px 1px;
-  margin: 10px;
-  border-radius: 5px;
-  background-color: #f8faf9; /* #TODO: Replace hardcoded color */
-}
+  &__percentage {
+    width: 3.5em;
+    font-weight: 600;
+  }
 
-.text {
-  margin-left: 10%;
-}
-
-#pctg {
-  color: #6f7274; /* #TODO: Replace hardcoded color */
-  font-style: italic;
-  font-weight: bold;
-}
-
-.inline {
-  display: inline-block;
-  margin-right: 10px;
-  margin-left: 10px;
-}
-
-.percentageSign {
-  font-size: 20;
-}
-
-.suggestionBox {
-  border: 2px black solid; /* #TODO: Replace hardcoded color */
-  background-color: white; /* #TODO: Replace hardcoded color */
-  width: 100px;
-  height: 150px;
-}
-
-.sentence:hover {
-  cursor: pointer;
-  color: green; /* #TODO: Replace hardcoded color */
-}
-
-.suggestButton {
-  margin-left: 20px;
-  border-color: #77b96f; /* #TODO: Replace hardcoded color */
-  background-color: #ccffc9; /* #TODO: Replace hardcoded color */
-  width: 120px;
-  font-style: italic;
-}
-
-.suggestButton:hover {
-  border-color: #32832b; /* #TODO: Replace hardcoded color */
+  // Raise the sentence when hovered but not active
+  &:hover:not(:active) {
+    cursor: pointer;
+    box-shadow: -3px -2px #{2px * 1.25} 0 var(--color-light),
+      3px 3px #{2px * 1.5} var(--color-shadow), inset 0 0 0 0 var(--color-light),
+      inset 0 0 0 0 var(--color-shadow);
+  }
 }

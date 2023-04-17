@@ -120,3 +120,18 @@
     width: 80px;
   }
 }
+
+.thresholdSliderBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 200px;
+  color: var(--color-on-surface);
+  text-transform: uppercase;
+
+  input {
+    width: 200px;
+  }
+}

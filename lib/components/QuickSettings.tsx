@@ -81,6 +81,8 @@ interface QuickSettingsProps {
   handleSummaryScoreModeChange: (summaryScoreMode: SummaryScoreMode) => void;
   settings: AllScoreCategorySettings;
   handleScoreCategorySettingsChange: (settings: AllScoreCategorySettings) => void;
+  threshold: number;
+  handleDisplayThresholdChange: (threshold: number) => void;
   handleReset: () => void;
 }
 
@@ -154,6 +156,20 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
             />
           );
         })}
+      </div>
+
+      <div style={{ height: 25 }}></div>
+
+      <div className={styles.thresholdSliderBox}>
+        <span>Score Threshold: {Math.round(props.threshold * 100)}</span>
+        <RangeInput
+          id={0} // #TODO: Rename id to something more appropriate
+          value={props.threshold}
+          colorLayer={ColorLayer.secondary}
+          onChange={(_id, value) => {
+            props.handleDisplayThresholdChange(value);
+          }}
+        />
       </div>
 
       <div style={{ height: 25 }}></div>

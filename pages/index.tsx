@@ -3,13 +3,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import HeatMeter from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
-import ScoredSentenceList, { SentenceAndScore } from "@/lib/components/ScoredSentenceList";
+import ScoredSentenceList from "@/lib/components/ScoredSentenceList";
 import PerspectiveScores, {
   AllScoreCategorySettings,
   ScoreCategory,
   SummaryScoreMode,
   SummaryScores,
-  SummarySpanScore,
 } from "@/lib/models/perspectiveScores";
 import {
   calcAdjustedScoresHighest,
@@ -17,6 +16,7 @@ import {
 } from "@/lib/utils/scoreCalculations";
 import styles from "@/styles/Home.module.scss";
 
+const DEFAULT_SCORE_THRESHOLD = 0.4;
 const AUTO_FETCH_INTERVAL = 1000;
 const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
   [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
@@ -24,8 +24,6 @@ const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
   [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
   [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
 };
-// #TODO: Make this a setting
-const TOXICITY_THRESHOLD = 0.35;
 
 export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -35,11 +33,11 @@ export default function Home() {
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
   const [allCategorySettings, setAllCategorySettings] = useState(DEFAULT_CATEGORY_SETTINGS);
+  const [scoreThreshold, setScoreThreshold] = useState(DEFAULT_SCORE_THRESHOLD);
 
   // Scores
   const [scores, setScores] = useState<PerspectiveScores | null>(null);
   const [adjustedScores, setAdjustedScores] = useState<SummaryScores | null>(null);
-  const [sentencesAndScores, setSentencesAndScores] = useState<SentenceAndScore[]>([]);
 
   /** Get scores from API.
    * @modifies scores
@@ -63,34 +61,12 @@ export default function Home() {
     setScores(scores);
   }, []);
 
-  /** Get list of individual spans/sentences and their scores (over the threshold). */
-  const getFilteredAndSortedSentences = useCallback((): SentenceAndScore[] => {
-    if (!adjustedScores) {
-      return [];
-    }
-    let sentenceScores: SentenceAndScore[] = [];
-    for (let i = 0; i < adjustedScores.spans.length; ++i) {
-      const summarySpanScore: SummarySpanScore = adjustedScores.spans[i];
-      if (summarySpanScore.summaryScore.score >= TOXICITY_THRESHOLD) {
-        sentenceScores.push({
-          text: textFromLastUpdate.substring(summarySpanScore.begin, summarySpanScore.end).trim(),
-          percentage: summarySpanScore.summaryScore.score,
-          suggestion: "Kimi", // #FIXME: Actual suggestions
-        });
-      }
-    }
-    // Remove duplicates sentences
-    sentenceScores = sentenceScores.filter(
-      (curr, idx, self) => idx === self.findIndex((other) => other.text === curr.text)
-    );
-    // Sort by score descending
-    sentenceScores.sort((a, b) => b.percentage - a.percentage);
-    return sentenceScores;
-  }, [adjustedScores, textFromLastUpdate]);
-
-  function editInputText(original: string, suggestion: string) {
-    const temp: string = userInput.replace(original, suggestion);
-    setUserInput(temp);
+  /** Reset the quick settings to default values.
+   * @modifies allCategorySettings, scoreThreshold
+   */
+  function resetQuickSettings() {
+    setAllCategorySettings(DEFAULT_CATEGORY_SETTINGS);
+    setScoreThreshold(DEFAULT_SCORE_THRESHOLD);
   }
 
   /* Automatically fetch the score based on the interval if the text changes.
@@ -129,18 +105,6 @@ export default function Home() {
     }
   }, [scores, summaryScoreMode, allCategorySettings]);
 
-  /* Regnerate the list of sentences and scores based on the adjusted scores
-   * Sets: sentencesAndScores
-   */
-  useEffect(() => {
-    if (adjustedScores === null) {
-      setSentencesAndScores([]);
-      return;
-    }
-    const sentenceAndScores = getFilteredAndSortedSentences();
-    setSentencesAndScores(sentenceAndScores);
-  }, [adjustedScores, getFilteredAndSortedSentences]);
-
   return (
     <>
       <Head>
@@ -173,8 +137,9 @@ export default function Home() {
 
         <div className={styles.scores}>
           <ScoredSentenceList
-            content={sentencesAndScores}
-            callbackFunction={editInputText}
+            text={textFromLastUpdate}
+            spanScores={adjustedScores?.spans ?? []}
+            scoreThreshold={scoreThreshold}
           ></ScoredSentenceList>
         </div>
 
@@ -186,7 +151,9 @@ export default function Home() {
             }
             settings={allCategorySettings}
             handleScoreCategorySettingsChange={(newSettings) => setAllCategorySettings(newSettings)}
-            handleReset={() => setAllCategorySettings(DEFAULT_CATEGORY_SETTINGS)}
+            threshold={scoreThreshold}
+            handleDisplayThresholdChange={(newThreshold) => setScoreThreshold(newThreshold)}
+            handleReset={resetQuickSettings}
           />
         </div>
       </div>
