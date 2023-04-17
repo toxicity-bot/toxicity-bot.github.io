@@ -158,8 +158,6 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
         })}
       </div>
 
-      <div style={{ height: 10 }}></div>
-
       <div className={styles.thresholdSliderBox}>
       <span>Score Threshold: {Math.trunc(props.threshold * 100)}</span>
         <RangeInput
