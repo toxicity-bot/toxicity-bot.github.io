@@ -167,7 +167,7 @@ export default function Home() {
     return out;
   }
 
-  /** Automatically fetch the score based on the interval if the text changes. */
+  /* Automatically fetch the score based on the interval if the text changes. */
   useEffect(() => {
     const interval = setInterval(() => {
       // Use ref so interval isn't restarted when text changes
@@ -184,7 +184,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [textFromLastUpdate, updateScore]);
 
-  /** Calculate the adjusted scores */
+  /* Calculate the adjusted scores */
   useEffect(() => {
     if (scores === null) {
       setAdjustedScores(null);
@@ -200,7 +200,7 @@ export default function Home() {
   }, [scores, summaryScoreMode, allCategorySettings]);
 
   // #FIXME: Use adjustedScores instead of scores
-  /** Recalculate sentence scores automatically. */
+  /* Recalculate sentence scores automatically. */
   useEffect(() => {
     if (scores === null) return;
     formatForSentencesAnalysis(scores);
