@@ -88,7 +88,7 @@ export default function Home() {
   }, [adjustedScores, textFromLastUpdate, scoreThreshold]);
 
   function resetQuickSettings() {
-    setAllCategorySettings(DEFAULT_CATEGORY_SETTINGS)
+    setAllCategorySettings(DEFAULT_CATEGORY_SETTINGS);
     setScoreThreshold(DEFAULT_SCORE_THRESHOLD);
   }
 
