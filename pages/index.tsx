@@ -15,7 +15,7 @@ import {
   calcAdjustedScoresWeighted,
 } from "@/lib/utils/scoreCalculations";
 import styles from "@/styles/Home.module.scss";
-import SuggestedEdit from "@/lib/components/SuggestedEdit";
+import Suggestion from "@/lib/components/Suggestion";
 
 const DEFAULT_SCORE_THRESHOLD = 0.4;
 const AUTO_FETCH_INTERVAL = 1000;
@@ -178,9 +178,18 @@ export default function Home() {
           />
         </div>
 
-        <div className={styles.suggestedEditText}>
-          <SuggestedEdit text={suggestedEdit} />
-          <button onClick={updateSuggestion} value={"Update suggestion"} />
+        <div className={styles.suggestion}>
+          <Suggestion text={suggestedEdit} />
+          <button
+            className={styles.submitButton}
+            onClick={(e) => {
+              e.preventDefault();
+              updateSuggestion();
+            }}
+            disabled={!buttonEnabled}
+          >
+            Request
+          </button>
         </div>
       </div>
     </>

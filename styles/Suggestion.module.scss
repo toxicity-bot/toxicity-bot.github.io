@@ -1,0 +1,36 @@
+@import "mixins";
+
+.suggestion {
+  margin-top: 10px;
+  border: 2px black solid;
+  padding: 5px;
+  width: 100%;
+}
+
+.heading {
+  margin-top: 0;
+  text-align: center;
+
+  &__helpMenu {
+    color: var(--color-secondary);
+  }
+}
+
+.textBox {
+  // margin-top: 5px;
+  // border: 2px rgba(0, 0, 0, 10%) solid;
+  width: 100%;
+  height: auto;
+}
+
+.text {
+  transition: box-shadow 0.3s ease-in-out;
+  box-shadow: makeShadow($lightOffset: -5px, $shadowOffset: 4px, $isInset: false);
+  border: none;
+  border-radius: 12px;
+  background: var(--color-surface);
+  background-image: $backgroundSurfaceOverlayInset;
+  padding: 15px;
+  color: var(--color-on-surface);
+  font-size: 1rem;
+}
