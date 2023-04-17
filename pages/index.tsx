@@ -9,6 +9,7 @@ import PerspectiveScores, {
   ScoreCategory,
   SummaryScoreMode,
   SummaryScores,
+  SummarySpanScore,
 } from "@/lib/models/perspectiveScores";
 import {
   calcAdjustedScoresHighest,
@@ -23,6 +24,8 @@ const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
   [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
   [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
 };
+// #TODO: Make this a setting
+const TOXICITY_THRESHOLD = 0.35;
 
 export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -32,7 +35,6 @@ export default function Home() {
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
   const [allCategorySettings, setAllCategorySettings] = useState(DEFAULT_CATEGORY_SETTINGS);
-  const [toxicityThreshold] = useState(40);
 
   // Scores
   const [scores, setScores] = useState<PerspectiveScores | null>(null);
@@ -61,110 +63,34 @@ export default function Home() {
     setScores(scores);
   }, []);
 
-  const formatForSentencesAnalysis = useCallback(
-    (scores: PerspectiveScores | null) => {
-      if (scores) {
-        const temp = [];
-        for (let i = 0; i < scores.spans[ScoreCategory.toxic].length; i++) {
-          let toxicity;
-          if (summaryScoreMode === SummaryScoreMode.highest) {
-            toxicity = Math.trunc(
-              Math.max(
-                scores.spans[ScoreCategory.toxic][i].score,
-                scores.spans[ScoreCategory.profane][i].score,
-                scores.spans[ScoreCategory.insult][i].score,
-                scores.spans[ScoreCategory.threat][i].score
-              ) * 100
-            );
-          } else {
-            toxicity = Math.trunc(
-              getWeightedScores(
-                scores.spans[ScoreCategory.toxic][i].score,
-                scores.spans[ScoreCategory.profane][i].score,
-                scores.spans[ScoreCategory.insult][i].score,
-                scores.spans[ScoreCategory.threat][i].score
-              ) * 100
-            );
-          }
-          if (toxicity >= toxicityThreshold) {
-            temp.push({
-              text: textFromLastUpdate
-                .substring(
-                  scores.spans[ScoreCategory.toxic][i].begin,
-                  scores.spans[ScoreCategory.toxic][i].end
-                )
-                .trim(),
-              percentage: toxicity,
-              suggestion: "Kimi",
-            });
-          }
-        }
-        // get rid of duplicate texts
-        const out = temp.reduce(function (p, c) {
-          /* eslint-disable */
-          if (
-            !p.some(function (el) {
-              return el.text === c.text;
-            })
-          )
-            p.push(c);
-          return p;
-          /* eslint-enable */
-        }, []);
-        // sort by percentage
-        out.sort(function (left: SentenceAndScore, right: SentenceAndScore): number {
-          if (left.percentage < right.percentage) {
-            return 1;
-          }
-          if (left.percentage > right.percentage) {
-            return -1;
-          }
-          return 0;
+  /** Get list of individual spans/sentences and their scores (over the threshold). */
+  const getFilteredAndSortedSentences = useCallback((): SentenceAndScore[] => {
+    if (!adjustedScores) {
+      return [];
+    }
+    let sentenceScores: SentenceAndScore[] = [];
+    for (let i = 0; i < adjustedScores.spans.length; ++i) {
+      const summarySpanScore: SummarySpanScore = adjustedScores.spans[i];
+      if (summarySpanScore.summaryScore.score >= TOXICITY_THRESHOLD) {
+        sentenceScores.push({
+          text: textFromLastUpdate.substring(summarySpanScore.begin, summarySpanScore.end).trim(),
+          percentage: summarySpanScore.summaryScore.score,
+          suggestion: "Kimi", // #FIXME: Actual suggestions
         });
-        setSentencesAndScores(out);
       }
-    },
-    [toxicityThreshold, textFromLastUpdate]
-  );
+    }
+    // Remove duplicates sentences
+    sentenceScores = sentenceScores.filter(
+      (curr, idx, self) => idx === self.findIndex((other) => other.text === curr.text)
+    );
+    // Sort by score descending
+    sentenceScores.sort((a, b) => b.percentage - a.percentage);
+    return sentenceScores;
+  }, [adjustedScores, textFromLastUpdate]);
 
   function editInputText(original: string, suggestion: string) {
     const temp: string = userInput.replace(original, suggestion);
     setUserInput(temp);
-  }
-
-  function getWeightedScores(
-    toxicScore: number,
-    profaneScore: number,
-    insultScore: number,
-    threatScore: number
-  ): number {
-    let sumWeight = 0,
-      out = 0;
-    sumWeight += allCategorySettings[ScoreCategory.toxic].enabled
-      ? allCategorySettings[ScoreCategory.toxic].weight
-      : 0;
-    sumWeight += allCategorySettings[ScoreCategory.profane].enabled
-      ? allCategorySettings[ScoreCategory.profane].weight
-      : 0;
-    sumWeight += allCategorySettings[ScoreCategory.insult].enabled
-      ? allCategorySettings[ScoreCategory.insult].weight
-      : 0;
-    sumWeight += allCategorySettings[ScoreCategory.threat].enabled
-      ? allCategorySettings[ScoreCategory.threat].weight
-      : 0;
-    out += allCategorySettings[ScoreCategory.toxic].enabled
-      ? toxicScore * (allCategorySettings[ScoreCategory.toxic].weight / sumWeight)
-      : 0;
-    out += allCategorySettings[ScoreCategory.profane].enabled
-      ? profaneScore * (allCategorySettings[ScoreCategory.profane].weight / sumWeight)
-      : 0;
-    out += allCategorySettings[ScoreCategory.insult].enabled
-      ? insultScore * (allCategorySettings[ScoreCategory.insult].weight / sumWeight)
-      : 0;
-    out += allCategorySettings[ScoreCategory.threat].enabled
-      ? threatScore * (allCategorySettings[ScoreCategory.threat].weight / sumWeight)
-      : 0;
-    return out;
   }
 
   /* Automatically fetch the score based on the interval if the text changes.
@@ -203,14 +129,17 @@ export default function Home() {
     }
   }, [scores, summaryScoreMode, allCategorySettings]);
 
-  // #FIXME: Use adjustedScores instead of scores
-  /* Recalculate sentence scores automatically.
+  /* Regnerate the list of sentences and scores based on the adjusted scores
    * Sets: sentencesAndScores
    */
   useEffect(() => {
-    if (scores === null) return;
-    formatForSentencesAnalysis(scores);
-  }, [formatForSentencesAnalysis, scores, toxicityThreshold]);
+    if (adjustedScores === null) {
+      setSentencesAndScores([]);
+      return;
+    }
+    const sentenceAndScores = getFilteredAndSortedSentences();
+    setSentencesAndScores(sentenceAndScores);
+  }, [adjustedScores, getFilteredAndSortedSentences]);
 
   return (
     <>

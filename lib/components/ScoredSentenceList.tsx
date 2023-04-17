@@ -25,7 +25,8 @@ export default function ScoredSentenceList(props: any) {
       {sentenceAndScores.map((item: SentenceAndScore) => (
         <div key={item.text} className={styles.individualItem}>
           <p className={`${styles.inline} ${styles.percentageSign}`} id={styles.pctg}>
-            {item.percentage.toString() + "%"}
+            {/* Convert from decimal to percentage and round */}
+            {Math.round(item.percentage * 100).toString() + "%"}
           </p>
           <p
             onClick={() => {
