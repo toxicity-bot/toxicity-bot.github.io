@@ -29,7 +29,7 @@ export default function Home() {
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
   const [allCategorySettings, setAllCategorySettings] = useState(defaultCategorySettings);
-  const [toxicityThreshold, setToxicityThreshold] = useState(40);
+  const [toxicityThreshold] = useState(40);
 
   // Scores
   const [scores, setScores] = useState<PerspectiveScores | null>(null);
@@ -62,7 +62,7 @@ export default function Home() {
   const formatForSentencesAnalysis = useCallback(
     (scores: PerspectiveScores | null) => {
       if (scores) {
-        let temp = [];
+        const temp = [];
         for (let i = 0; i < scores.spans[ScoreCategory.toxic].length; i++) {
           let toxicity;
           if (summaryScoreMode === SummaryScoreMode.highest) {
@@ -98,14 +98,16 @@ export default function Home() {
           }
         }
         // get rid of duplicate texts
-        var out = temp.reduce(function (p: any, c: any) {
+        const out = temp.reduce(function (p, c) {
+          /* eslint-disable */
           if (
-            !p.some(function (el: any) {
+            !p.some(function (el) {
               return el.text === c.text;
             })
           )
             p.push(c);
           return p;
+          /* eslint-enable */
         }, []);
         // sort by percentage
         out.sort(function (left: SentenceAndScore, right: SentenceAndScore): number {
@@ -124,7 +126,7 @@ export default function Home() {
   );
 
   function editInputText(original: string, suggestion: string) {
-    let temp: string = userInput.replace(original, suggestion);
+    const temp: string = userInput.replace(original, suggestion);
     setUserInput(temp);
   }
 
@@ -134,7 +136,7 @@ export default function Home() {
     insultScore: number,
     threatScore: number
   ): number {
-    var sumWeight = 0,
+    let sumWeight = 0,
       out = 0;
     sumWeight += allCategorySettings[ScoreCategory.toxic].enabled
       ? allCategorySettings[ScoreCategory.toxic].weight
@@ -162,24 +164,6 @@ export default function Home() {
       : 0;
     return out;
   }
-
-  const getPercentage = () => {
-    if (scores === null) {
-      return null;
-    }
-    var score, _;
-    if (summaryScoreMode == SummaryScoreMode.highest) {
-      [_, score] = Object.entries(scores.summary).reduce((a, b) => (a[1] > b[1] ? a : b));
-    } else {
-      score = getWeightedScores(
-        scores.summary[ScoreCategory.toxic],
-        scores.summary[ScoreCategory.profane],
-        scores.summary[ScoreCategory.insult],
-        scores.summary[ScoreCategory.threat]
-      );
-    }
-    return score;
-  };
 
   /** Automatically fetch the score every second if the text changes. */
   useEffect(() => {

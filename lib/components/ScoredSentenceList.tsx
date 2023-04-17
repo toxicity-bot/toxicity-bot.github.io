@@ -14,7 +14,7 @@ interface textEnablePair {
 }
 
 export default function ScoredSentenceList(props: any) {
-  let sentenceAndScores: SentenceAndScore[] = props.content;
+  const sentenceAndScores: SentenceAndScore[] = props.content;
 
   return sentenceAndScores.length == 0 ? (
     <div>

@@ -7,13 +7,19 @@ import PerspectiveScores, { ScoreCategory } from "@/lib/models/perspectiveScores
 const API_KEY = "AIzaSyCZpPWR-zsuAHsdYrhVR1i0Qhr9Wc21FiY";
 const DISCOVERY_URL = "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1";
 
-let client: Readonly<any> | undefined;
+interface ExpectedClient {
+  comments: {
+    analyze: (params: unknown, callback: (err: unknown, response: unknown) => void) => void;
+  };
+}
+
+let client: Readonly<ExpectedClient>;
 (async () => (client = await google.discoverAPI(DISCOVERY_URL)))();
 
 /**
- * @param timout Amount of time in milliseconds to wait before timing out.
+ * @param timeout Amount of time in milliseconds to wait before timing out.
  */
-function waitForClientOrTimeout(timeout: number): Promise<Readonly<any>> {
+function waitForClientOrTimeout(timeout: number): Promise<Readonly<ExpectedClient>> {
   return new Promise((resolve, reject) => {
     const startTime = Date.now();
 
@@ -31,9 +37,37 @@ function waitForClientOrTimeout(timeout: number): Promise<Readonly<any>> {
   });
 }
 
-function parsePerspectiveApi(data: any): PerspectiveScores {
-  const spans = (attribute: string) => {
-    const spans = data.attributeScores[attribute].spanScores;
+interface ExpectedPerspectiveApiResponse {
+  attributeScores: {
+    [key: string]: {
+      spanScores: {
+        [key: string]: {
+          begin: number;
+          end: number;
+          score: {
+            value: number;
+          };
+        };
+      };
+      summaryScore: {
+        value: number;
+      };
+    };
+  };
+}
+
+/**
+ * @throws Error if data isn't in the expected format.
+ */
+function parsePerspectiveApi(data: unknown): PerspectiveScores {
+  if (!data || typeof data !== "object") {
+    throw new Error("Invalid data");
+  }
+
+  const expectedData = data as ExpectedPerspectiveApiResponse;
+
+  function getSpans(attribute: string) {
+    const spans = expectedData.attributeScores[attribute].spanScores;
     return Object.keys(spans).map((key) => {
       const span = spans[key];
       return {
@@ -42,20 +76,20 @@ function parsePerspectiveApi(data: any): PerspectiveScores {
         score: span.score.value,
       };
     });
-  };
+  }
 
   return {
     summary: {
-      [ScoreCategory.toxic]: data.attributeScores.TOXICITY.summaryScore.value,
-      [ScoreCategory.insult]: data.attributeScores.INSULT.summaryScore.value,
-      [ScoreCategory.profane]: data.attributeScores.PROFANITY.summaryScore.value,
-      [ScoreCategory.threat]: data.attributeScores.THREAT.summaryScore.value,
+      [ScoreCategory.toxic]: expectedData.attributeScores.TOXICITY.summaryScore.value,
+      [ScoreCategory.insult]: expectedData.attributeScores.INSULT.summaryScore.value,
+      [ScoreCategory.profane]: expectedData.attributeScores.PROFANITY.summaryScore.value,
+      [ScoreCategory.threat]: expectedData.attributeScores.THREAT.summaryScore.value,
     },
     spans: {
-      [ScoreCategory.toxic]: spans("TOXICITY"),
-      [ScoreCategory.insult]: spans("INSULT"),
-      [ScoreCategory.profane]: spans("PROFANITY"),
-      [ScoreCategory.threat]: spans("THREAT"),
+      [ScoreCategory.toxic]: getSpans("TOXICITY"),
+      [ScoreCategory.insult]: getSpans("INSULT"),
+      [ScoreCategory.profane]: getSpans("PROFANITY"),
+      [ScoreCategory.threat]: getSpans("THREAT"),
     },
   };
 }
@@ -104,17 +138,28 @@ export default async function handler(
         resource: analyzeRequest,
       },
       // Handle response or error
-      (err: any, response: any) => {
+      (err: unknown, response: unknown) => {
+        /* eslint-disable */
         if (err) {
           console.error(err);
           res.status(500).end(err.message); // Server error
           return;
         }
-        res.status(200).json(parsePerspectiveApi(response.data));
+        try {
+          res.status(200).json(parsePerspectiveApi(response.data));
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error);
+            res.status(500).end(error.message); // Server error
+          }
+        }
+        /* eslint-enable */
       }
     );
   } catch (error) {
-    console.error(error);
-    res.status(500); // Server error
+    if (error instanceof Error) {
+      console.error(error);
+      res.status(500).end(error.message); // Server error
+    }
   }
 }
