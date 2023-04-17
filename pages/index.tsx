@@ -186,7 +186,7 @@ export default function Home() {
               e.preventDefault();
               updateSuggestion();
             }}
-            disabled={!buttonEnabled}
+            disabled={!userInput}
           >
             Request
           </button>
