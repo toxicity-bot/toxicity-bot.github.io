@@ -5,9 +5,12 @@ import { Tooltip } from "react-tooltip";
 
 import RangeInput from "@/lib/components/RangeInput";
 import ColorLayer from "@/lib/models/ColorLayer";
-import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
-import ScoreCategory, { ScoreCategoryStrings } from "@/lib/models/ScoreCategory";
-import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
+import {
+  AllScoreCategorySettings,
+  ScoreCategory,
+  ScoreCategoryStrings,
+  SummaryScoreMode,
+} from "@/lib/models/perspectiveScores";
 import styles from "@/styles/components/QuickSettings.module.scss";
 import { faCircleQuestion, faCog, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -73,8 +76,8 @@ ToggleSlider.defaultProps = defaultToggleSliderProps;
 interface QuickSettingsProps {
   summaryScoreMode: SummaryScoreMode;
   handleSummaryScoreModeChange: (summaryScoreMode: SummaryScoreMode) => void;
-  scoreCategoriesSettings: ScoreCategoriesSettings;
-  handleScoreCategoriesSettingsChange: (scoreCategoriesSettings: ScoreCategoriesSettings) => void;
+  settings: AllScoreCategorySettings;
+  handleScoreCategorySettingsChange: (settings: AllScoreCategorySettings) => void;
   handleReset: () => void;
 }
 
@@ -91,8 +94,8 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
   }
 
   function onSliderChange(category: ScoreCategory, enabled: boolean, weight: number): void {
-    props.handleScoreCategoriesSettingsChange({
-      ...props.scoreCategoriesSettings,
+    props.handleScoreCategorySettingsChange({
+      ...props.settings,
       ...{ [category]: { enabled: enabled, weight: weight } },
     });
   }
@@ -138,7 +141,7 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
       {/* Toggles and sliders for each score category */}
       <div className={styles.toggleSliders}>
         {scoreCategories.map((category, _) => {
-          const settings = props.scoreCategoriesSettings[category];
+          const settings = props.settings[category];
           return (
             <ToggleSlider
               key={category}

@@ -2,8 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { google } from "googleapis";
 
-import PerspectiveScores from "@/lib/models/PerspectiveScores";
-import ScoreCategory from "@/lib/models/ScoreCategory";
+import PerspectiveScores, { ScoreCategory } from "@/lib/models/perspectiveScores";
 
 const API_KEY = "AIzaSyCZpPWR-zsuAHsdYrhVR1i0Qhr9Wc21FiY";
 const DISCOVERY_URL = "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1";

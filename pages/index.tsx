@@ -4,17 +4,19 @@ import { useCallback, useEffect, useState } from "react";
 import HeatMeter from "@/lib/components/HeatMeter";
 import QuickSettings from "@/lib/components/QuickSettings";
 import ScoredSentenceList, { SentenceAndScore } from "@/lib/components/ScoredSentenceList";
-import PerspectiveScores from "@/lib/models/PerspectiveScores";
-import ScoreCategoriesSettings from "@/lib/models/ScoreCategoriesSettings";
-import ScoreCategory from "@/lib/models/ScoreCategory";
-import SummaryScoreMode from "@/lib/models/SummaryScoreMode";
-import SummaryScores from "@/lib/models/SummaryScores";
+import PerspectiveScores, {
+  AllScoreCategorySettings,
+  ScoreCategory,
+  SummaryScoreMode,
+  SummaryScores,
+  SummarySpanScore,
+} from "@/lib/models/perspectiveScores";
 import styles from "@/styles/Home.module.scss";
 
 const AUTO_FETCH_INTERVAL = 500;
 
 export default function Home() {
-  const defaultScoreCategoriesSettings: ScoreCategoriesSettings = {
+  const defaultCategorySettings: AllScoreCategorySettings = {
     [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
     [ScoreCategory.profane]: { enabled: true, weight: 0.5 },
     [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
@@ -26,9 +28,7 @@ export default function Home() {
 
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
-  const [scoreCategoriesSettings, setScoreCategoriesSettings] = useState(
-    defaultScoreCategoriesSettings
-  );
+  const [allCategorySettings, setAllCategorySettings] = useState(defaultCategorySettings);
   const [toxicityThreshold, setToxicityThreshold] = useState(40);
 
   // Scores
@@ -38,7 +38,7 @@ export default function Home() {
 
   useEffect(() => {
     formatForSentencesAnalysis(scores);
-  }, [scoreCategoriesSettings, summaryScoreMode]);
+  }, [allCategorySettings, summaryScoreMode]);
 
   /** Get scores from API. */
   const updateScore = useCallback(async () => {
@@ -59,75 +59,107 @@ export default function Home() {
     setScores(scores);
   }, [userInput]);
 
-  const formatForSentencesAnalysis = useCallback((scores: PerspectiveScores | null) => {
-    if (scores) {
-      let temp = [];
-      for (let i = 0; i < scores.spans[ScoreCategory.toxic].length; i++) {
-        let toxicity;
-        if (summaryScoreMode === SummaryScoreMode.highest) {
-          toxicity = Math.trunc(
-            Math.max(
-              scores.spans[ScoreCategory.toxic][i].score,
-              scores.spans[ScoreCategory.profane][i].score,
-              scores.spans[ScoreCategory.insult][i].score,
-              scores.spans[ScoreCategory.threat][i].score
-            ) * 100
-          );
-        } else {
-          toxicity = Math.trunc(getWeightedScores(scores.spans[ScoreCategory.toxic][i].score, scores.spans[ScoreCategory.profane][i].score, scores.spans[ScoreCategory.insult][i].score, scores.spans[ScoreCategory.threat][i].score) * 100);
+  const formatForSentencesAnalysis = useCallback(
+    (scores: PerspectiveScores | null) => {
+      if (scores) {
+        let temp = [];
+        for (let i = 0; i < scores.spans[ScoreCategory.toxic].length; i++) {
+          let toxicity;
+          if (summaryScoreMode === SummaryScoreMode.highest) {
+            toxicity = Math.trunc(
+              Math.max(
+                scores.spans[ScoreCategory.toxic][i].score,
+                scores.spans[ScoreCategory.profane][i].score,
+                scores.spans[ScoreCategory.insult][i].score,
+                scores.spans[ScoreCategory.threat][i].score
+              ) * 100
+            );
+          } else {
+            toxicity = Math.trunc(
+              getWeightedScores(
+                scores.spans[ScoreCategory.toxic][i].score,
+                scores.spans[ScoreCategory.profane][i].score,
+                scores.spans[ScoreCategory.insult][i].score,
+                scores.spans[ScoreCategory.threat][i].score
+              ) * 100
+            );
+          }
+          if (toxicity >= toxicityThreshold) {
+            temp.push({
+              text: textFromLastUpdate
+                .substring(
+                  scores.spans[ScoreCategory.toxic][i].begin,
+                  scores.spans[ScoreCategory.toxic][i].end
+                )
+                .trim(),
+              percentage: toxicity,
+              suggestion: "Kimi",
+            });
+          }
         }
-        if (toxicity >= toxicityThreshold) {
-          temp.push({
-            text: textFromLastUpdate
-              .substring(
-                scores.spans[ScoreCategory.toxic][i].begin,
-                scores.spans[ScoreCategory.toxic][i].end
-              )
-              .trim(),
-            percentage: toxicity,
-            suggestion: "Kimi",
-          });
-        }
+        // get rid of duplicate texts
+        var out = temp.reduce(function (p: any, c: any) {
+          if (
+            !p.some(function (el: any) {
+              return el.text === c.text;
+            })
+          )
+            p.push(c);
+          return p;
+        }, []);
+        // sort by percentage
+        out.sort(function (left: SentenceAndScore, right: SentenceAndScore): number {
+          if (left.percentage < right.percentage) {
+            return 1;
+          }
+          if (left.percentage > right.percentage) {
+            return -1;
+          }
+          return 0;
+        });
+        setSentencesAndScores(out);
       }
-      // get rid of duplicate texts
-      var out = temp.reduce(function (p: any, c: any) {
-        if (
-          !p.some(function (el: any) {
-            return el.text === c.text;
-          })
-        )
-          p.push(c);
-        return p;
-      }, []);
-      // sort by percentage
-      out.sort(function (left: SentenceAndScore, right: SentenceAndScore): number {
-        if (left.percentage < right.percentage) {
-          return 1;
-        }
-        if (left.percentage > right.percentage) {
-          return -1;
-        }
-        return 0;
-      });
-      setSentencesAndScores(out);
-    }
-  }, [toxicityThreshold, textFromLastUpdate]);
+    },
+    [toxicityThreshold, textFromLastUpdate]
+  );
 
   function editInputText(original: string, suggestion: string) {
     let temp: string = userInput.replace(original, suggestion);
     setUserInput(temp);
   }
 
-  function getWeightedScores(toxicScore: number, profaneScore: number, insultScore: number, threatScore: number): number {
-    var sumWeight = 0, out = 0;
-    sumWeight += scoreCategoriesSettings[ScoreCategory.toxic].enabled ? scoreCategoriesSettings[ScoreCategory.toxic].weight : 0; 
-    sumWeight += scoreCategoriesSettings[ScoreCategory.profane].enabled ? scoreCategoriesSettings[ScoreCategory.profane].weight : 0; 
-    sumWeight += scoreCategoriesSettings[ScoreCategory.insult].enabled ? scoreCategoriesSettings[ScoreCategory.insult].weight : 0; 
-    sumWeight += scoreCategoriesSettings[ScoreCategory.threat].enabled ? scoreCategoriesSettings[ScoreCategory.threat].weight : 0; 
-    out += scoreCategoriesSettings[ScoreCategory.toxic].enabled ? toxicScore * (scoreCategoriesSettings[ScoreCategory.toxic].weight / sumWeight) : 0;
-    out += scoreCategoriesSettings[ScoreCategory.profane].enabled ? profaneScore * (scoreCategoriesSettings[ScoreCategory.profane].weight / sumWeight) : 0;
-    out += scoreCategoriesSettings[ScoreCategory.insult].enabled ? insultScore * (scoreCategoriesSettings[ScoreCategory.insult].weight / sumWeight) : 0;
-    out += scoreCategoriesSettings[ScoreCategory.threat].enabled ? threatScore * (scoreCategoriesSettings[ScoreCategory.threat].weight / sumWeight) : 0;
+  function getWeightedScores(
+    toxicScore: number,
+    profaneScore: number,
+    insultScore: number,
+    threatScore: number
+  ): number {
+    var sumWeight = 0,
+      out = 0;
+    sumWeight += allCategorySettings[ScoreCategory.toxic].enabled
+      ? allCategorySettings[ScoreCategory.toxic].weight
+      : 0;
+    sumWeight += allCategorySettings[ScoreCategory.profane].enabled
+      ? allCategorySettings[ScoreCategory.profane].weight
+      : 0;
+    sumWeight += allCategorySettings[ScoreCategory.insult].enabled
+      ? allCategorySettings[ScoreCategory.insult].weight
+      : 0;
+    sumWeight += allCategorySettings[ScoreCategory.threat].enabled
+      ? allCategorySettings[ScoreCategory.threat].weight
+      : 0;
+    out += allCategorySettings[ScoreCategory.toxic].enabled
+      ? toxicScore * (allCategorySettings[ScoreCategory.toxic].weight / sumWeight)
+      : 0;
+    out += allCategorySettings[ScoreCategory.profane].enabled
+      ? profaneScore * (allCategorySettings[ScoreCategory.profane].weight / sumWeight)
+      : 0;
+    out += allCategorySettings[ScoreCategory.insult].enabled
+      ? insultScore * (allCategorySettings[ScoreCategory.insult].weight / sumWeight)
+      : 0;
+    out += allCategorySettings[ScoreCategory.threat].enabled
+      ? threatScore * (allCategorySettings[ScoreCategory.threat].weight / sumWeight)
+      : 0;
     return out;
   }
 
@@ -139,7 +171,12 @@ export default function Home() {
     if (summaryScoreMode == SummaryScoreMode.highest) {
       [_, score] = Object.entries(scores.summary).reduce((a, b) => (a[1] > b[1] ? a : b));
     } else {
-      score = getWeightedScores(scores.summary[ScoreCategory.toxic], scores.summary[ScoreCategory.profane], scores.summary[ScoreCategory.insult], scores.summary[ScoreCategory.threat]);
+      score = getWeightedScores(
+        scores.summary[ScoreCategory.toxic],
+        scores.summary[ScoreCategory.profane],
+        scores.summary[ScoreCategory.insult],
+        scores.summary[ScoreCategory.threat]
+      );
     }
     return score;
   };
@@ -179,12 +216,7 @@ export default function Home() {
     const numSpans = scores.spans[ScoreCategory.toxic].length;
 
     // Initialize an empty array of size numSpans
-    const spanScores: {
-      begin: number;
-      end: number;
-      score: number;
-      category?: ScoreCategory;
-    }[] = Array(numSpans).fill(null);
+    const spanScores: (SummarySpanScore | null)[] = Array(numSpans).fill(null);
 
     // #FIXME: Fill in the array with the scores
 
@@ -193,9 +225,9 @@ export default function Home() {
         category: mainCategory,
         score: mainScore,
       },
-      spans: spanScores,
+      spans: [],
     });
-  }, [scores, summaryScoreMode, scoreCategoriesSettings]);
+  }, [scores, summaryScoreMode, allCategorySettings]);
 
   // #FIXME: Use adjustedScores instead of scores
   /** Recalculate sentence scores automatically. */
@@ -249,11 +281,9 @@ export default function Home() {
             handleSummaryScoreModeChange={(newSummaryScoreMode) =>
               setSummaryScoreMode(newSummaryScoreMode)
             }
-            scoreCategoriesSettings={scoreCategoriesSettings}
-            handleScoreCategoriesSettingsChange={(newScoreCategoriesSettings) =>
-              setScoreCategoriesSettings(newScoreCategoriesSettings)
-            }
-            handleReset={() => setScoreCategoriesSettings(defaultScoreCategoriesSettings)}
+            settings={allCategorySettings}
+            handleScoreCategorySettingsChange={(newSettings) => setAllCategorySettings(newSettings)}
+            handleReset={() => setAllCategorySettings(defaultCategorySettings)}
           />
         </div>
       </div>
