@@ -221,11 +221,9 @@ export default function Home() {
             <span>Input text to test for toxicity:</span>
           </div>
           <textarea
-            className={styles["inputForm__textarea"]}
+            className={styles.inputForm__textarea}
             maxLength={15000}
-            onInput={(e) => {
-              setUserInput(e.currentTarget.value);
-            }}
+            onChange={(e) => setUserInput(e.currentTarget.value)}
             value={userInput}
           />
         </form>
