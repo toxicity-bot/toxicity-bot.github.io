@@ -17,21 +17,20 @@ import {
 import styles from "@/styles/Home.module.scss";
 
 const AUTO_FETCH_INTERVAL = 500;
+const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
+  [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
+  [ScoreCategory.profane]: { enabled: true, weight: 0.5 },
+  [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
+  [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
+};
 
 export default function Home() {
-  const defaultCategorySettings: AllScoreCategorySettings = {
-    [ScoreCategory.toxic]: { enabled: true, weight: 0.5 },
-    [ScoreCategory.profane]: { enabled: true, weight: 0.5 },
-    [ScoreCategory.threat]: { enabled: true, weight: 0.5 },
-    [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
-  };
-
   const [userInput, setUserInput] = useState("");
   const [textFromLastUpdate, setTextFromLastUpdate] = useState("");
 
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
-  const [allCategorySettings, setAllCategorySettings] = useState(defaultCategorySettings);
+  const [allCategorySettings, setAllCategorySettings] = useState(DEFAULT_CATEGORY_SETTINGS);
   const [toxicityThreshold] = useState(40);
 
   // Scores
@@ -247,7 +246,7 @@ export default function Home() {
             }
             settings={allCategorySettings}
             handleScoreCategorySettingsChange={(newSettings) => setAllCategorySettings(newSettings)}
-            handleReset={() => setAllCategorySettings(defaultCategorySettings)}
+            handleReset={() => setAllCategorySettings(DEFAULT_CATEGORY_SETTINGS)}
           />
         </div>
       </div>
