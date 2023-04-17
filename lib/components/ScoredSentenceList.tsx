@@ -10,8 +10,9 @@ interface ScoredSentenceListProps {
   text: string;
   spanScores: SummarySpanScore[];
   scoreThreshold: number;
-  handleHover?: (begin: number, end: number) => void;
-  handleClick?: (begin: number, end: number) => void;
+  onMouseEnter?: (begin: number, end: number) => void;
+  onMouseLeave?: (begin: number, end: number) => void;
+  onClick?: (begin: number, end: number) => void;
 }
 export default function ScoredSentenceList(props: ScoredSentenceListProps): JSX.Element {
   const filteredSpanScores = props.spanScores.filter(
@@ -38,18 +39,22 @@ export default function ScoredSentenceList(props: ScoredSentenceListProps): JSX.
   }
 
   return filteredSentences.length == 0 ? (
-    <div>
-      <p>No toxic sentence! Good job!</p>
-    </div>
+    <p>No toxic sentence! Good job!</p>
   ) : (
-    <div>
+    <div className={styles.container}>
       {filteredSentences.map((scoreTextZip: ScoreTextZip) => (
-        <div key={scoreTextZip.spanScore.begin} className={styles.individualItem}>
-          <p className={`${styles.inline} ${styles.percentageSign}`} id={styles.pctg}>
+        <button
+          key={scoreTextZip.spanScore.begin}
+          className={styles.sentence}
+          onMouseEnter={() => props.onMouseEnter}
+          onMouseLeave={() => props.onMouseLeave}
+          onClick={() => props.onClick}
+        >
+          <div className={styles.sentence__percentage}>
             {getPercentString(scoreTextZip.spanScore.summaryScore.score)}
-          </p>
-          <p className={`${styles.inline} ${styles.sentence}`}>{scoreTextZip.text}</p>
-        </div>
+          </div>
+          <div>{scoreTextZip.text}</div>
+        </button>
       ))}
     </div>
   );
