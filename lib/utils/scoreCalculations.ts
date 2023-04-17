@@ -32,7 +32,7 @@ export function calcAdjustedScoresHighest(
   // Calculate the main score and category
   const [mainCategory, mainScore]: [ScoreCategory, number] = enabledCategories
     .map((category): [ScoreCategory, number] => [category, scores.summary[category]])
-    .reduce((prev, curr) => (prev[1] > curr[1] ? prev : curr));
+    .reduce((acc, curr) => (acc[1] > curr[1] ? acc : curr));
 
   // Calculate scores for each span
   // Every category has the same number of spans
@@ -44,7 +44,7 @@ export function calcAdjustedScoresHighest(
     // Get the highest score and its category for this span
     const [spanCategory, spanScore]: [ScoreCategory, number] = enabledCategories
       .map((category): [ScoreCategory, number] => [category, scores.spans[category][i].score])
-      .reduce((prev, curr) => (prev[1] > curr[1] ? prev : curr));
+      .reduce((acc, curr) => (acc[1] > curr[1] ? acc : curr));
     // Fill in the span score
     spanScores[i] = {
       begin: scores.spans[spanCategory][i].begin,
@@ -81,16 +81,16 @@ export function calcAdjustedScoresWeighted(
   // Calculate the cumulative weight
   const cumulativeWeight: number = enabledCategories
     .map((category): number => allScoreCategorySettings[category].weight)
-    .reduce((prev, curr) => prev + curr, 0);
+    .reduce((acc, curr) => acc + curr, 0);
 
   // Calculate the main score
   const mainScore: number =
     enabledCategories
       .map((category): [ScoreCategory, number] => [category, scores.summary[category]])
       // Add the weighted scores and normalize by the cumulative weight
-      .reduce((prev, curr) => {
+      .reduce((acc, curr) => {
         const [category, score] = curr;
-        return prev + score * allScoreCategorySettings[category].weight;
+        return acc + score * allScoreCategorySettings[category].weight;
       }, 0) / cumulativeWeight;
 
   // Calculate scores for each span
@@ -105,9 +105,9 @@ export function calcAdjustedScoresWeighted(
       enabledCategories
         .map((category): [ScoreCategory, number] => [category, scores.spans[category][i].score])
         // Add the weighted scores and normalize by the cumulative weight
-        .reduce((prev, curr) => {
+        .reduce((acc, curr) => {
           const [category, score] = curr;
-          return prev + score * allScoreCategorySettings[category].weight;
+          return acc + score * allScoreCategorySettings[category].weight;
         }, 0) / cumulativeWeight;
     // Fill in the span score
     spanScores[i] = {
