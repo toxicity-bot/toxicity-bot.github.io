@@ -138,6 +138,11 @@ export default function Home() {
       <div className={styles.container}>
         <h1 className={styles.header}>Toxicity Bot</h1>
 
+        <div className={styles.login}>
+          <h2 className={styles.username}>Taylor123</h2>
+          <img src="/profile.png" alt="" className={styles.profilePic}/>
+        </div>
+
         <form className={styles.inputForm}>
           <input style={{ display: "none" }} autoComplete="off" hidden />
           <div>

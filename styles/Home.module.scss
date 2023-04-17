@@ -11,10 +11,27 @@
   gap: 30px;
 }
 
+.login {
+  grid-area: account;
+  display: flex;
+  margin: 0;
+}
+.username {
+  margin-right: 20px;
+  margin-bottom: 5px;
+  margin-top: 8px;
+}
+
 .header {
   grid-area: header;
   margin-bottom: 0;
   text-align: center;
+}
+
+.profilePic {
+  height: 50px;
+  width: 50px;
+  align-items: center;
 }
 
 .inputForm {
