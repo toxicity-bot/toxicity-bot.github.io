@@ -16,9 +16,9 @@ Provide your response in the following JSON format:
 }
 
 where <RewrittenText> is the rewritten version.
-`)
+`);
 
-const parseResponseText = (responseText: string) => JSON.parse(responseText.trim())
+const parseResponseText = (responseText: string) => JSON.parse(responseText.trim());
 
 async function getEditSuggestion(text: string) {
   const response = await openai.createCompletion({
@@ -30,16 +30,16 @@ async function getEditSuggestion(text: string) {
     frequency_penalty: 0.5,
     presence_penalty: 0.0,
     stop: ["You:"],
-  })
+  });
 
-  const responseText = response.data.choices[0].text
+  const responseText = response.data.choices[0].text;
 
-  console.info(response.data.choices[0].text)
+  console.info(response.data.choices[0].text);
 
   if (responseText) {
-    return parseResponseText(responseText)
+    return parseResponseText(responseText);
   } else {
-    throw "response had no text"
+    throw "response had no text";
   }
 }
 
@@ -51,6 +51,6 @@ type Data = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-  console.info(`[moderation] Received request with text: ${req.body["text"]}`)
+  console.info(`[moderation] Received request with text: ${req.body["text"]}`);
   res.status(200).json(await getEditSuggestion(req.body["text"]));
 }

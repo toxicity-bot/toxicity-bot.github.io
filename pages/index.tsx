@@ -30,7 +30,7 @@ export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [userInput, setUserInput] = useState("");
   const [textFromLastUpdate, setTextFromLastUpdate] = useState("");
-  const [suggestedEdit, setSuggestedEdit] = useState("")
+  const [suggestedEdit, setSuggestedEdit] = useState("");
 
 
   // Settings
