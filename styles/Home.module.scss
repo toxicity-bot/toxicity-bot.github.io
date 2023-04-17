@@ -3,10 +3,11 @@
   grid-template-rows: auto;
   grid-template-columns: 1fr minmax(auto, 750px) 1fr;
   grid-template-areas:
-    ".        header account"
-    "settings input  heatmeter"
-    "settings input  heatmeter"
-    ".        scores .";
+    ".        header     account"
+    "settings input      heatmeter"
+    "settings input      heatmeter"
+    ".        scores     ."
+    ".        suggestion .";
   gap: 30px;
 }
 
@@ -44,6 +45,10 @@
 .settings {
   grid-area: settings;
   justify-self: right;
+}
+
+.suggestion {
+  grid-area: suggestion;
 }
 
 .submitButton {
