@@ -158,16 +158,15 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
         })}
       </div>
 
+      <div style={{ height: 25 }}></div>
+
       <div className={styles.thresholdSliderBox}>
-        <span>Score Threshold: {Math.trunc(props.threshold * 100)}</span>
+        <span>Score Threshold: {Math.round(props.threshold * 100)}</span>
         <RangeInput
-          id={0}
+          id={0} // #TODO: Rename id to something more appropriate
           value={props.threshold}
-          min={0}
-          max={1}
-          step={0.01}
           colorLayer={ColorLayer.secondary}
-          onChange={(id, value) => {
+          onChange={(_id, value) => {
             props.handleDisplayThresholdChange(value);
           }}
         />

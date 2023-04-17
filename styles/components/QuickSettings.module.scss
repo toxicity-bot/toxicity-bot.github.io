@@ -119,12 +119,6 @@
   input {
     width: 80px;
   }
-
-  .toggleSliders {
-    grid-gap: 10px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 .thresholdSliderBox {
@@ -133,14 +127,10 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
-  border-radius: 25px;
-  width: 245px;
-  height: 80px;
-  color: var(--color-secondary);
-  font-weight: 600;
+  width: 200px;
+  color: var(--color-on-surface);
   text-transform: uppercase;
-  color:rgba(black, 0.6);
-  
+
   input {
     width: 200px;
   }
