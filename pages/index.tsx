@@ -26,12 +26,18 @@ const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
   [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
 };
 
+const FAKE_DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
+  [ScoreCategory.toxic]: { enabled: true, weight: 0.2 },
+  [ScoreCategory.profane]: { enabled: true, weight: 0.2 },
+  [ScoreCategory.threat]: { enabled: false, weight: 0.5 },
+  [ScoreCategory.insult]: { enabled: true, weight: 0.9 },
+};
+
 export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [userInput, setUserInput] = useState("");
   const [textFromLastUpdate, setTextFromLastUpdate] = useState("");
   const [suggestedEdit, setSuggestedEdit] = useState("");
-
 
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
@@ -89,6 +95,10 @@ export default function Home() {
     const suggestionText = data["rewritten"];
     setSuggestedEdit(suggestionText);
   };
+
+  const fakeUserDefault = () => {
+    setAllCategorySettings(FAKE_DEFAULT_CATEGORY_SETTINGS);
+  }
 
   /* Automatically fetch the score based on the interval if the text changes.
    * Sets: scores, textFromLastUpdate
@@ -174,6 +184,7 @@ export default function Home() {
             handleScoreCategorySettingsChange={(newSettings) => setAllCategorySettings(newSettings)}
             threshold={scoreThreshold}
             handleDisplayThresholdChange={(newThreshold) => setScoreThreshold(newThreshold)}
+            fakeSetAsDefault={fakeUserDefault}
             handleReset={resetQuickSettings}
           />
         </div>
