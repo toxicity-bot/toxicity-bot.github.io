@@ -26,12 +26,18 @@ const DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
   [ScoreCategory.insult]: { enabled: true, weight: 0.5 },
 };
 
+const FAKE_DEFAULT_CATEGORY_SETTINGS: AllScoreCategorySettings = {
+  [ScoreCategory.toxic]: { enabled: true, weight: 0.2 },
+  [ScoreCategory.profane]: { enabled: true, weight: 0.2 },
+  [ScoreCategory.threat]: { enabled: false, weight: 0.5 },
+  [ScoreCategory.insult]: { enabled: true, weight: 0.9 },
+};
+
 export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [userInput, setUserInput] = useState("");
   const [textFromLastUpdate, setTextFromLastUpdate] = useState("");
   const [suggestedEdit, setSuggestedEdit] = useState("");
-
 
   // Settings
   const [summaryScoreMode, setSummaryScoreMode] = useState(SummaryScoreMode.highest);
@@ -90,6 +96,10 @@ export default function Home() {
     setSuggestedEdit(suggestionText);
   };
 
+  const fakeUserDefault = () => {
+    setAllCategorySettings(FAKE_DEFAULT_CATEGORY_SETTINGS);
+  };
+
   /* Automatically fetch the score based on the interval if the text changes.
    * Sets: scores, textFromLastUpdate
    */
@@ -138,6 +148,11 @@ export default function Home() {
       <div className={styles.container}>
         <h1 className={styles.header}>Toxicity Bot</h1>
 
+        <div className={styles.login}>
+          <h2 className={styles.username}>Taylor123</h2>
+          <img src="/profile.png" alt="" className={styles.profilePic}/>
+        </div>
+
         <form className={styles.inputForm}>
           <input style={{ display: "none" }} autoComplete="off" hidden />
           <div>
@@ -174,6 +189,7 @@ export default function Home() {
             handleScoreCategorySettingsChange={(newSettings) => setAllCategorySettings(newSettings)}
             threshold={scoreThreshold}
             handleDisplayThresholdChange={(newThreshold) => setScoreThreshold(newThreshold)}
+            fakeSetAsDefault={fakeUserDefault}
             handleReset={resetQuickSettings}
           />
         </div>

@@ -1,0 +1,76 @@
+@import "mixins";
+
+.container {
+  margin: auto;
+
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr minmax(auto, 750px) 1fr;
+  grid-template-areas:
+    ". header ."
+    ". login  ."
+    ". login  .";
+  gap: 30px;
+  width: 500px;
+}
+
+.header {
+  grid-area: header;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+
+.inputForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  height: 100%;
+
+  &__textarea {
+    flex-grow: 1;
+    box-sizing: border-box;
+    max-width: 750px;
+    resize: vertical;
+  }
+}
+
+.login {
+  grid-area: login;
+}
+
+.labeledInput {
+  display: flex;
+  flex-direction: row;
+
+  & > .label {
+    text-align: center;
+    display: inline-block;
+    border: 1px solid white;
+    border-radius: 12px 0px 0px 12px;
+    background: var(--color-light);
+    background-image: $backgroundSurfaceOverlayInset;
+    padding: 5px;
+    color: var(--color-on-surface);
+    font-size: 1.2rem;
+  }
+
+  & > input {
+    width: 100%;
+    transition: box-shadow 0.3s ease-in-out;
+    box-shadow: makeShadow($lightOffset: -5px, $shadowOffset: 4px, $isInset: true);
+    border: none;
+    border-radius: 0px 12px 12px 0px;
+    background: var(--color-surface);
+    background-image: $backgroundSurfaceOverlayInset;
+    padding: 5px;
+    color: var(--color-on-surface);
+    font-size: 1rem;
+  }
+
+  &input:focus {
+    outline: none;
+    box-shadow: makeShadow($lightOffset: -2px, $shadowOffset: 2px, $isInset: true);
+  }
+}

@@ -83,6 +83,7 @@ interface QuickSettingsProps {
   handleScoreCategorySettingsChange: (settings: AllScoreCategorySettings) => void;
   threshold: number;
   handleDisplayThresholdChange: (threshold: number) => void;
+  fakeSetAsDefault: () => void;
   handleReset: () => void;
 }
 
@@ -177,6 +178,14 @@ export default function QuickSettings(props: QuickSettingsProps): JSX.Element {
       {/* Reset button */}
       <button className="secondary" onClick={props.handleReset}>
         <FontAwesomeIcon icon={faRotate} /> Reset
+      </button>
+      <div style={{ height: 10 }}></div>
+      <button className="secondary" onClick={props.fakeSetAsDefault}>
+        <FontAwesomeIcon icon={faRotate} /> Restore to User Default
+      </button>
+      <div style={{ height: 10 }}></div>
+      <button className="secondary">
+        <FontAwesomeIcon icon={faRotate} /> Set as User Default
       </button>
     </div>
   );
